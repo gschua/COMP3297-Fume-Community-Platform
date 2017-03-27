@@ -1,0 +1,69 @@
+﻿#I've read through the models designed by Edison and Hyun Ji, and here are the formatted models amended to further satisty the requirements and meet the convensions of Django models
+Member:
+	id #Auto created by Django, auto increment, same for all id below
+	username
+	email
+	password
+	payment
+	screen_name
+	avator #As ImageField
+
+Game:
+	id
+	platform
+	title
+	price
+	score
+	description
+	large_image #As ImageField
+	small_image #As ImageField
+	publisher(as ForeignKey to Publisher)
+	genre(as ForeignKey to Genre)
+
+Transaction:
+	id
+	datetime
+	subtotal
+	num_of_rewards_used
+	actual_amount
+	status
+	games(as ForeignKey to Game)
+	member(as ForeignKey to Member)
+
+Publisher:
+	id
+	name
+	#previous product be found through Game's ForeignKey
+
+Review:
+	id
+	text
+	score
+	likes
+	dislikes
+	member(as ForeignKey to Member)
+
+Reward:
+	id
+	reward_datetime
+	expiry_datetime
+	is_used
+	member(as ForeignKey to Member)
+
+Genre:
+	id
+	text
+
+Tag:
+	id
+	text
+	count
+	type
+	games(as ManyToManyKey to Game)
+	
+Admin:
+	id
+	username
+	password
+	real_name
+	avator #As ImageField
