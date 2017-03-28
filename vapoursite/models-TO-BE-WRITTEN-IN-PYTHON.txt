@@ -4,9 +4,8 @@ Member:
 	username
 	email
 	password
-	payment
 	screen_name
-	avator #As ImageField
+	avatar #As ImageField
 
 Game:
 	id
@@ -15,6 +14,7 @@ Game:
 	price
 	score
 	description
+	release_datetime
 	large_image #As ImageField
 	small_image #As ImageField
 	publisher(as ForeignKey to Publisher)
@@ -27,13 +27,13 @@ Transaction:
 	num_of_rewards_used
 	actual_amount
 	status
-	games(as ForeignKey to Game)
+	games(as ManyToManyKey to Game)
 	member(as ForeignKey to Member)
 
 Publisher:
 	id
 	name
-	#previous product be found through Game's ForeignKey
+	#previous product can be found through Game's ForeignKey
 
 Review:
 	id
@@ -60,10 +60,13 @@ Tag:
 	count
 	type
 	games(as ManyToManyKey to Game)
+
+ShoppingCart:
+	id
+	Games(as ManyToManyKey to Game)
+	member(as OneToOneKey to Member)
 	
 Admin:
 	id
 	username
 	password
-	real_name
-	avator #As ImageField
