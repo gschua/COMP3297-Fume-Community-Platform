@@ -1,15 +1,14 @@
 from django.contrib import admin
+from .models import Admin, Publisher, Genre, Platform, Game, Member, Transaction, Tag, MemberTag, Review, Reward
 
-# Register your models here.
-from .models import Member, Game, Transaction, Publisher, Review, Reward, Genre, Tag, ShoppingCart, Admin
-
-admin.site.register(Member)
-admin.site.register(Game)
-admin.site.register(Transaction)
-admin.site.register(Publisher)
-admin.site.register(Reward)
-admin.site.register(Review)
-admin.site.register(Genre)
-admin.site.register(Tag)
-admin.site.register(ShoppingCart)
 admin.site.register(Admin)
+admin.site.register(Publisher)
+admin.site.register(Genre)
+admin.site.register(Platform)
+admin.site.register(Game)
+admin.site.register(Member)
+admin.site.register(Transaction)
+admin.site.register(Tag)
+admin.site.register(MemberTag)
+admin.site.register(Review)
+admin.site.register(Reward)
