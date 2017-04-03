@@ -1,72 +1,86 @@
 ﻿#I've read through the models designed by Edison and Hyun Ji, and here are the formatted models amended to further satisty the requirements and meet the convensions of Django models
-Member:
-	id #Auto created by Django, auto increment, same for all id below
-	username
-	email
-	password
-	screen_name
-	avatar #As ImageField
 
-Game:
-	id
-	platform
-	title
-	price
-	score
-	description
-	release_datetime
-	large_image #As ImageField
-	small_image #As ImageField
-	publisher(as ForeignKey to Publisher)
-	genre(as ForeignKey to Genre)
+# 2017-Apr-04 Edits (Geraldine): many minor edits
+# removed shopping cart (too similar to transaction) and changed transaction to only have one game at a time
+# don't think there's any reason to group games bought at the same time together and it makes database management and writing views easier
 
-Transaction:
-	id
-	datetime
-	subtotal
-	num_of_rewards_used
-	actual_amount
-	status
-	games(as ManyToManyKey to Game)
-	member(as ForeignKey to Member)
-
-Publisher:
-	id
-	name
-	#previous product can be found through Game's ForeignKey
-
-Review:
-	id
-	text
-	score
-	likes
-	dislikes
-	member(as ForeignKey to Member)
-
-Reward:
-	id
-	reward_datetime
-	expiry_datetime
-	is_used
-	member(as ForeignKey to Member)
-
-Genre:
-	id
-	text
-
-Tag:
-	id
-	text
-	count
-	type
-	games(as ManyToManyKey to Game)
-
-ShoppingCart:
-	id
-	Games(as ManyToManyKey to Game)
-	member(as OneToOneKey to Member)
+# Things that can be added if we have time: screenshots, system requirements, game version, game language
 	
 Admin:
 	id
 	username
 	password
+
+Publisher:
+	id
+	name
+
+Genre:
+	id
+	name
+
+Platform:
+	id
+	name
+
+Game:
+	id
+	title
+	price			# 1 decimal point
+	score			# range from 0.0 to 10.0
+	description_short
+	description_long
+	release_date
+	image_large		# ImageField
+	image_small		# ImageField
+	publisher		# ForeignKey to Publisher
+	genre			# ForeignKey to Genre
+	platform		# ManyToManyKey to Game
+	featured		# Boolean
+
+Member:
+	id				#Auto created by Django, auto increment, same for all id below
+	username
+	email
+	password
+	screen_name
+	avatar 			# As ImageField
+	acc_spending
+	recommended		# ManyToManyKey to Game
+
+Transaction:
+	id
+	game			# ForeignKey to Game
+	member			# ForeignKey to Member
+	platform		# ForeignKey to Platform
+	price			# before discounts and rewards
+	rewards_used
+	is_purchased	# Boolean
+	datetime
+
+Tag:
+	id
+	name
+	count
+	games			# ManyToManyKey to Game
+
+MemberTag:			# relational database between Tag and Member
+	id
+	tag				# ForeignKey to Tag
+	member			# ForeignKey to Member
+
+Review:
+	id
+	body
+	score
+	likes
+	dislikes
+	member			# ForeignKey to Member
+	game			# ForeignKey to Game
+
+Reward:
+	id
+	award_datetime
+	status			# active, expired, used
+	member			# ForeignKey to Member
+	transaction		# ForeignKey to Transaction (if used) 
