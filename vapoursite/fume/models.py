@@ -1,4 +1,21 @@
 from django.db import models
+from django.utils import timezone
+
+#rename the filename and path to 'uploads/$upload_type/$id.$ext'
+import os
+def upload_avatar(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (instance.username, ext)
+    return os.path.join('fume', 'static', 'fume', 'avatars', filename)
+def upload_large_image(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (instance.title, ext)
+    return os.path.join('fume', 'static', 'fume', 'large_images', filename)
+def upload_small_image(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (instance.title, ext)
+    return os.path.join('fume', 'static', 'fume', 'small_images', filename)
+#-------------------------------------------------------------
 
 class Admin(models.Model):
 	def __str__(self):
@@ -27,14 +44,14 @@ class Game(models.Model):
 	title = models.CharField(max_length=254)
 	price = models.FloatField(default=0.0)
 	score = models.FloatField(default=0.0)
-	description_short = models.TextField(max_length=500)
-	description_long = models.TextField()
-	release_date = models.DateField('Release Date')
-	large_image = models.ImageField(upload_to='.')
-	small_image = models.ImageField(upload_to='.')
-	publisher = models.ForeignKey(Publisher)
-	genre = models.ForeignKey(Genre)
-	platform = models.ForeignKey(Platform)
+	description_short = models.TextField(max_length=500, null=True)
+	description_long = models.TextField(null=True)
+	release_date = models.DateField('Release Date', default=timezone.now)
+	large_image = models.ImageField(upload_to=upload_large_image)
+	small_image = models.ImageField(upload_to=upload_small_image)
+	publisher = models.ForeignKey(Publisher, null=True)
+	genre = models.ForeignKey(Genre, null=True)
+	platforms = models.ManyToManyField(Platform)
 
 class Member(models.Model):
 	def __str__(self):
@@ -43,53 +60,54 @@ class Member(models.Model):
 	password = models.CharField(max_length=30)
 	email = models.EmailField()
 	screen_name = models.CharField(max_length=30)
-	avatar = models.ImageField(upload_to='.')	# upload_to kwarg not clear
+	avatar = models.ImageField(upload_to=upload_avatar, null=True)
 	acc_spending = models.FloatField(default=0.0)
-	recommended = models.ManyToManyField(Game)
+	purchased_games = models.ManyToManyField(Game, null=True, blank=True)
 
 class Transaction(models.Model):
 	def __str__(self):
-		return self.datetime
-	games = models.ForeignKey(Game)
-	member = models.ForeignKey(Member)
-	platform = models.ForeignKey(Platform)
+		return self.purchase_datetime
+	games = models.ForeignKey(Game, null=True)
+	member = models.ForeignKey(Member, null=True)
+	platform = models.ForeignKey(Platform, null=True)
 	price = models.FloatField(default=0.0)
 	rewards_used = models.IntegerField(default=0)
 	is_purchased = models.BooleanField(default=False)
-	datetime = models.DateTimeField('Date of Purchase', null=True)
+	purchase_datetime = models.DateTimeField('Date of Purchase', default=timezone.now)
 
 class Tag(models.Model):
 	def __str__(self):
-		return self.text
+		return self.name
 	name = models.CharField(max_length=254)
-	count = models.IntegerField(default=1)
+	#count = models.IntegerField(default=1)
 	games = models.ManyToManyField(Game)
 
 class MemberTag(models.Model):
 	def __str__(self):
-		return self.text
-	tag = models.ForeignKey(Tag)
-	member =models.ForeignKey(Member)
+		return str(self.tag.name)+' by '+str(self.member.username)
+	tag = models.ForeignKey(Tag, null=True)
+	member =models.ForeignKey(Member, null=True)
 
 class Review(models.Model):
 	def __str__(self):
-		return self.text
+		return self.body
 	body = models.TextField()
 	score = models.IntegerField(default=0)
 	likes = models.IntegerField(default=0)
 	dislikes = models.IntegerField(default=0)
-	member = models.ForeignKey(Member)
-	game = models.ForeignKey(Game)
+	member = models.ForeignKey(Member, null=True)
+	game = models.ForeignKey(Game, null=True)
 
 class Reward(models.Model):
 	def __str__(self):
-		return self.reward_datetime
+		return str(self.id)
 	REWARD_STATUSES = (
 		('act', 'Active'),
 		('exp', 'Expired'),
 		('use', 'Used'),
 	)
-	award_datetime = models.DateTimeField('Date of Awarding')
+	award_date = models.DateField('Date of Awarding', default=timezone.now)
+	expiry_datetime = models.DateField('Date of Expiry', default=timezone.now)
 	status = models.CharField(max_length=3, choices=REWARD_STATUSES, default='act')
-	member = models.ForeignKey(Member)
-	transaction = models.ForeignKey(Transaction, null=True)
+	member = models.ForeignKey(Member, null=True)
+	transaction = models.ForeignKey(Transaction, null=True, blank=True)
