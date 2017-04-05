@@ -13,6 +13,12 @@
 # WARNING: Game.platforms turned into ManyToManyField, views should prevent duplication
 # WARNING: views should prevent duplicated Game.title, Member.username, Admin.username
 
+# 4/4/2017 Edits (Tao): Most of Geraldine's suggestions are complied except:
+# Now it automatically renames uploaded file using id but the path is not changed.
+# Recommended not added to Member. It should be dynamically worked out on each visit
+# Reward.expiry_date not deleted. Keep so we can have distinct valid periods and we don't need to keep something running all the time
+
+
 	
 Admin:
 	id			#Auto created by Django, auto increment, same for all id below
@@ -44,6 +50,7 @@ Game:
 	publisher		# ForeignKey to Publisher
 	genre			# ForeignKey to Genre
 	platforms		# ManyToManyField to Platform
+	featured	
 
 Member:
 	id			
@@ -53,13 +60,12 @@ Member:
 	screen_name
 	avatar 			# As ImageField
 	acc_spending
-	purchased_games		# ManyToManyKey to Game
 
 Transaction:
 	id
 	game			# ForeignKey to Game
 	member			# ForeignKey to Member
-	platforms		# ForeignKey to Platform
+	platform		# ForeignKey to Platform
 	price			# before discounts and rewards
 	rewards_used
 	is_purchased		# BooleanField
@@ -74,6 +80,7 @@ MemberTag:			# relational database between Tag and Member
 	id
 	tag			# ForeignKey to Tag
 	member			# ForeignKey to Member
+	game			# ForeignKey to Game
 
 Review:
 	id
@@ -87,7 +94,7 @@ Review:
 Reward:
 	id
 	award_date
-	expiry_date
+	expiry_date		# Keeping it won't hurt
 	status			# active, expired, used
 	member			# ForeignKey to Member
 	transaction		# ForeignKey to Transaction (if used) 
