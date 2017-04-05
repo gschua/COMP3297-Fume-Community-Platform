@@ -146,7 +146,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='game',
             name='large_image',
-            field=models.ImageField(upload_to=fume.models.upload_large_image),
+            field=models.ImageField(upload_to=fume.models.upload_path_handler),
         ),
         migrations.AlterField(
             model_name='game',
@@ -161,12 +161,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='game',
             name='small_image',
-            field=models.ImageField(upload_to=fume.models.upload_small_image),
+            field=models.ImageField(upload_to=fume.models.upload_path_handler),
         ),
         migrations.AlterField(
             model_name='member',
             name='avatar',
-            field=models.ImageField(null=True, upload_to=fume.models.upload_avatar),
+            field=models.ImageField(null=True, upload_to=fume.models.upload_path_handler),
         ),
         migrations.AlterField(
             model_name='review',
