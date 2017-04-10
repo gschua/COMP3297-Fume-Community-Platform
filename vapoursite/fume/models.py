@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+
 import os
 
 #rename the filename and path to 'fume/static/fume/$attribute/$instance_id.ext'
@@ -10,6 +12,24 @@ def upload_path_handler(instance, filename):
     filename = "%s.%s" % (instance.pk, ext)
     return os.path.join('fume', 'static', 'fume', 'avatars', filename)
 #-------------------------------------------------------------
+#class MyUserManager(BaseUserManager):
+#    def create_user(self, username, email, password=None):
+#        user = self.model(
+#            username=username,
+#            email = MyUserManager.normalize_email(email),
+#        )
+#        user.set_password(password)
+#        user.save(using=self._db)
+#        return user
+#
+#    def create_superuser(self, username, email, password):
+#        user = self.create_user(
+#            username = email,
+#            email = email,
+#            password = password,
+#        )
+#        user.is_staff = True
+#        user.save(using=self._db)
 
 class Admin(models.Model):
     def __str__(self):
@@ -48,16 +68,32 @@ class Game(models.Model):
     platform = models.ManyToManyField(Platform)
     featured = models.BooleanField(default=False)
 
-class Member(models.Model):
+class Member(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
-
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=30)
-    email = models.EmailField()
-    screen_name = models.CharField(max_length=30)
-    avatar = models.ImageField(upload_to=upload_path_handler, null=True)
+    objects=UserManager()
+    username = models.CharField(max_length=30, unique=True)
+    password = models.CharField(max_length=254)
+    email = models.EmailField(unique=True)
+    screen_name = models.CharField(max_length=30, default='Unnamed')
+    avatar = models.ImageField(upload_to=upload_path_handler, null=True, blank=True)
     acc_spending = models.FloatField(default=0.0)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    #is_superuser = models.BooleanField(default=False)
+    last_login = models.DateTimeField('Date/time of last login', null=True, blank=True)
+    date_joined = models.DateTimeField('Date/time of registeration', default=timezone.now)
+    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'username'
+    PASSWORD_FIELD = 'password'
+    EMAIL_FIELD = 'email'
+
+    def get_short_name(self):
+        return self.screen_name
+    def get_full_name(self):
+        return self.username
+
 
 
 class Transaction(models.Model):
