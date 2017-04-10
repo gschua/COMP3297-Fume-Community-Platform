@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social.apps.django_app.default',
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,22 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+]
+
 AUTH_USER_MODEL = 'fume.Member'
+
+SOCIAL_AUTH_GITHUB_KEY = 'b4bece3ea72888e839f9'
+SOCIAL_AUTH_GITHUB_SECRET = '5ad37c6a7532425b9b25badb8e30f0738faa5a64'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/complete/github/'
+SOCIAL_AUTH_LOGIN_URL = ''
+#SOCIAL_AUTH_USER_MODEL = AUTH_USER_MODEL
+
+AUTHENTICATION_BACKENDS = (
+'social.backends.github.GithubOAuth2',
+'django.contrib.auth.backends.ModelBackend',
+)

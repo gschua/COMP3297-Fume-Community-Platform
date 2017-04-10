@@ -24,7 +24,7 @@ def login_view(request):
         if next:
             return redirect(next)
 
-        return redirect("loginmain")
+        return redirect("/")
 
     return render(request, "vapoursite/form.html", {"form":form, "title": title})
 
@@ -45,7 +45,7 @@ def register_view(request):
         if next:
             return redirect(next)
 
-        return redirect("loginmain")
+        return redirect("/")
 
     context = {
         "form": form,

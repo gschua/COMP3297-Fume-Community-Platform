@@ -9,9 +9,14 @@ from django.contrib.auth import (
 # Create your views here.
 
 def main_view(request):
-    return render(request, "vapoursite/main.html", {})
+    return render(request, "vapoursite/main.html", {'user': request.user})
 
 #redirected to login page if not logged in user tries to access this view
-@login_required(login_url='/login/')
-def loginmain_view(request):
-    return render(request, "vapoursite/main-loggedin.html", {})
+#@login_required(login_url='/login/')
+#def loginmain_view(request):
+#	if (request.user.is_authenticated())
+#    	return render(request, "vapoursite/main-loggedin.html", {'user': request.user})
+
+# only deals with successful callback
+#def callback(request):
+#	if 

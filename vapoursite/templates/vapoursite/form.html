@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -31,8 +32,8 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <!-- Custom styles for this template, renamed because -->
-        <link href="./style/prototype.css" rel="stylesheet">
-        <link href="./style/signuplogin.css" rel="stylesheet">
+        <link href="{% static "style/prototype.css" %}" rel="stylesheet">
+        <link href="{% static "style/signuplogin.css" %}" rel="stylesheet">
 
 
     </head>
@@ -53,7 +54,7 @@
                     <div class="row vcenter">
                         <div class="col-md-2">
                             <a href="/">
-                                <img alt="Fume Community Platform" src="./assets/logo.png" width="50%" position="relative">
+                                <img alt="Fume Community Platform" src="{% static "sample/logo.png" %}" width="50%" position="relative">
                             </a>
                         </div>
                         <div class="col-md-5">
@@ -77,12 +78,36 @@
                                 </span>
                             </div>
                         </div>
+                        {% if not user.is_authenticated %}
                         <div class="col-md-5">
                             <ul class="nav navbar-nav navbar-right">
                                 <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
                                 <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                <li><a href="{% url 'social:begin' 'facebook' %}"><span class="glyphicon glyphicon-log-in"></span> Login with GitHub</a></li>
                             </ul>
-                       </div>
+                        </div>
+                        {% else %}
+                            <div class="col-md-2">
+                            <div class="dropdown user-options">
+                                <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    {{ user.username }}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="./account.html">Account Settings</a></li>
+                                    <li><a href="#">My Games</a></li>
+                                    <li><a href="./cart.html">My Cart</a></li>
+                                    <li><a href="/logout/">Log Out</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 avatar">
+                            {% if user.avatar != '' %}
+                            <img alt="User" src="{{user.avatar}}">
+                            {% else %}
+                            <img alt="User" src="{% static "sample/avatar.jpg" %}">
+                            {% endif %}
+                        {% endif %}
                     </div><!--/.row -->
                 </div><!--/.navbar-header -->
             </div>

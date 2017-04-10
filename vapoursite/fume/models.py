@@ -10,7 +10,7 @@ import os
 def upload_path_handler(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (instance.pk, ext)
-    return os.path.join('fume', 'static', 'fume', 'avatars', filename)
+    return os.path.join('static', 'avatars', filename)
 #-------------------------------------------------------------
 #class MyUserManager(BaseUserManager):
 #    def create_user(self, username, email, password=None):
