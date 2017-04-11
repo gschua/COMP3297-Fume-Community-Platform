@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='avatar',
-            field=models.ImageField(blank=True, null=True, upload_to=fume.models.upload_path_handler),
+            field=models.ImageField(blank=True, null=True, upload_to=fume.models.avatar_handler),
         ),
         migrations.AlterField(
             model_name='member',
