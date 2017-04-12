@@ -5,7 +5,9 @@ from django.contrib.auth import (
     login,
     logout,
     )
+from django.utils import timezone
 from .forms import UserLoginForm, UserRegisterForm
+from fume.models import Reward
 
 # Create your views here.
 
@@ -38,6 +40,14 @@ def register_view(request):
         password = form.cleaned_data.get('password')
         user.set_password(password)
         user.save()
+
+        for i in range(0, 5):
+            new_reward = Reward()
+            new_reward.award_date = timezone.now()
+            new_reward.expiry_date = timezone.now()
+            new_reward.status = 'act'
+            new_reward.member = user
+            new_reward.save()
 
         new_user = authenticate(username=user.username, password=password)
         login(request, new_user)
