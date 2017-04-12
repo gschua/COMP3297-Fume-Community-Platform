@@ -81,7 +81,7 @@
                         <div class="col-md-2">
                             <div class="dropdown user-options">
                                 <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    {{ user.username }}
+                                    Username
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
@@ -93,11 +93,7 @@
                             </div>
                         </div>
                         <div class="col-md-2 avatar">
-                            {% if user.avatar is not None %}
-                            <img alt="User" src="{{user.avatar}}">
-                            {% else %}
                             <img alt="User" src="./sample/avatar.jpg">
-                            {% endif %}
                         </div>
                     </div><!--/.row -->
                 </div><!--/.navbar-header -->
