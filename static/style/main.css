@@ -1,0 +1,209 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #ccc;
+    margin: 0;
+    padding: 0;
+}
+
+.vcenter {
+    display: flex;
+    align-items: center;
+}
+
+/* Header and Search Bar
+-------------------------------------------------- */
+
+.navbar-header {
+    position: relative;
+    height: 150px;
+}
+
+.navbar-collapse {
+    padding-top: 50px;
+}
+
+.search-query:focus + button {
+    z-index: 3;   
+}
+
+.dropdown-search.input-group-btn:first-child>.btn-group:not(:first-child)>.btn {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.user-options {
+    color: #ddd;
+    text-align: right;
+}
+
+.user-options button {
+    background-color: #222;
+}
+
+.user-options > button:hover,
+.user-options > button:focus {
+    color: white;
+    background-color: #222;
+}
+
+.avatar img {
+	height: 120px;
+    position: relative;
+    text-align: right;
+}
+
+
+/* Genre Nav Bar
+-------------------------------------------------- */
+
+.nav-justified {
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.nav-justified > li > a {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #999;
+    text-align: center;
+    background-color: black;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+.nav-justified > li > a:hover,
+.nav-justified > li > a:focus {
+    color: white;
+    background-color: black;
+}
+
+.nav-justified > li:first-child > a {
+    border-radius: 5px 5px 0 0;
+}
+.nav-justified > li:last-child > a {
+    border-bottom: 0;
+    border-radius: 0 0 5px 5px;
+}
+
+@media (min-width: 768px) {
+    .nav-justified {
+        max-height: 40px;
+    }
+    .nav-justified > li > a {
+        border-right: 1px solid #d5d5d5;
+        border-left: 1px solid #fff;
+    }
+    .nav-justified > li:first-child > a {
+        border-left: 0;
+        border-radius: 5px 0 0 5px;
+    }
+    .nav-justified > li:last-child > a {
+        border-right: 0;
+        border-radius: 0 5px 5px 0;
+    }
+}
+
+/* Reward Alert
+-------------------------------------------------- */
+
+td#reward {
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.alert {
+    margin-top: 50px;
+    padding-left: 35%;
+}
+
+
+/* Featured Games Carousel
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel {
+    height: 400px; /* figure out how to make this relative */
+    width: 1200px;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+    height: 400px;
+    background-color: #777;
+}
+
+.carousel-inner > .item > a > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 400px;
+    min-width: 100%;
+}
+
+
+/* Game Entries
+-------------------------------------------------- */
+
+.col-md-3#price {
+    padding-top: 10px;
+    padding-left: 10px;
+    background-color: #eee;
+    background-color: rgba(255, 255, 100, 1);
+    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 230, 100, 1);
+    text-align: right;
+}
+
+hr {
+    border-color: #bbb;
+}
+
+/* Footer
+-------------------------------------------------- */
+
+footer {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    color: white;
+    background-color: black;
+    text-align: left;
+    padding-top: 20px;
+    padding-left: 100px;
+}
+
+
+/* Short Game Entries
+-------------------------------------------------- */
+.game-short {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.col-md-1#price {
+    padding-top: 10px;
+    padding-left: 10px;
+    background-color: #eee;
+    background-color: rgba(255, 255, 100, 1);
+    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 230, 100, 1);
+    text-align: right;
+}
+
+.col-md-2#price {
+    padding-top: 5px;
+    padding-left: 5px;
+    background-color: #eee;
+    background-color: rgba(255, 255, 100, 1);
+    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 230, 100, 1);
+    text-align: right;
+}

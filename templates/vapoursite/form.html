@@ -1,0 +1,135 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <!-- Removed some bug workaround for IE10. Just don't view this in IE. -->
+    <!-- Many components do not work in Firefox. -->
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <!-- Find some icon to put here later
+        <link rel="icon" href="../../favicon.ico">
+        -->
+
+        <title>{{ title }}</title>
+
+        <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
+        <!-- Requires internet access -->
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- Custom styles for this template, renamed because -->
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
+        <link href="{% static '/style/signuplogin.css' %}" rel="stylesheet">
+
+
+    </head>
+
+    <body>
+
+        <!-- Navigation
+        ================================================== -->
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-header vcenter">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="row vcenter">
+                        <div class="col-md-2">
+                            <a href="/">
+                                <img alt="Fume Community Platform" src="{% static '/sample/logo.png' %}" width="50%" position="relative">
+                            </a>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="dropdown-search input-group-btn">
+                                    <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Search Type
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a href="#">Title</a></li>
+                                        <li><a href="#">Pulisher</a></li>
+                                        <li><a href="#">Tag</a></li>
+                                    </ul>
+                                </span>
+                                <input type="text" class="search-query form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <button id="search-button" class="btn btn-danger" type="button">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        {% if not user.is_authenticated %}
+                        <div class="col-md-5">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                                <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                <li><a href="{% url 'social:begin' 'github' %}?next={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span> Login with GitHub</a></li>
+                            </ul>
+                        </div>
+                        {% else %}
+                            <div class="col-md-2">
+                            <div class="dropdown user-options">
+                                <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    {{ user.username }}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Account Settings</a></li>
+                                    <li><a href="#">My Games</a></li>
+                                    <li><a href="#">My Cart</a></li>
+                                    <li><a href="/logout/">Log Out</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 avatar">
+                            {% if user.avatar != '' %}
+                            <img alt="User" src="{{ user.avatar }}">
+                            {% else %}
+                            <img alt="User" src="{% static '/sample/avatar.jpg' %}">
+                            {% endif %}
+                        {% endif %}
+                    </div><!--/.row -->
+                </div><!--/.navbar-header -->
+            </div>
+        </nav>
+
+        {% load crispy_forms_tags %}
+
+        {% block content %}
+        <div class="container">
+
+            <h1 class="form-signin-heading">{{ title }}</h1>
+            <hr/>
+            <form class="form-signin" method="post" action=""> {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" class="btn" value='{{ title }}' />
+            </form>
+        </div> <!-- /container -->
+        {% endblock content %}
+
+ 	 	<footer>
+ 	 	 	<p>&copy; 2017 Deatech, Inc.</p>
+ 	 	</footer>
+
+    </body>
+</html>

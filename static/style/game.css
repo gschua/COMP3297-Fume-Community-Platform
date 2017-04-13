@@ -1,0 +1,50 @@
+.game-summary {
+    margin-top: 50px;
+    margin-bottom: 15px;
+}
+
+table#tag {
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
+td#tag {
+    color: #ddd;
+    background-color: #777;
+    text-align: middle;
+    padding: 10px;
+}
+
+a#tag {
+    color:inherit;
+    text-decoration: none;
+}
+
+.buying {
+    padding-right: 20px;
+    background-color: #eee;
+    background-color: rgba(255, 255, 100, 1);
+    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 230, 100, 1);
+    text-align: right;
+    width: 100%;
+    height: 70px;
+}
+
+.screenshots {
+    white-space: nowrap;
+}
+
+.screenshots > a > img {
+    height: 150px;
+    margin: 10px;
+}
+
+.review-sort {
+    text-align: right
+}
+
+.page-nav {
+    text-align: center;
+    margin-bottom: 60px;
+}

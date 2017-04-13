@@ -1,0 +1,380 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <!-- Removed some bug workaround for IE10. Just don't view this in IE. -->
+    <!-- Many components do not work in Firefox. -->
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <!-- Find some icon to put here later
+        <link rel="icon" href="../../favicon.ico">
+        -->
+
+        <title>{{ game.title }}</title>
+
+        <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
+        <!-- Requires internet access -->
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- CSS -->
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
+        <link href="{% static '/style/game.css' %}" rel="stylesheet">
+
+    </head>
+
+    <body>
+
+        <!-- Navigation
+        ================================================== -->
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-header vcenter">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="row vcenter">
+                        <div class="col-md-2">
+                            <a href="/">
+                                <img alt="Fume Community Platform" src="{% static '/sample/logo.png' %}" width="50%" position="relative">
+                            </a>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="dropdown-search input-group-btn">
+                                    <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Search Type<span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a href="#">Title</a></li>
+                                        <li><a href="#">Pulisher</a></li>
+                                        <li><a href="#">Tag</a></li>
+                                    </ul>
+                                </span>
+                                <input type="text" class="search-query form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <button id="search-button" class="btn btn-danger" type="button">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        {% if not user.is_authenticated %}
+                        <div class="col-md-5">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                                <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                <li><a href="{% url 'social:begin' 'github' %}?next={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span> Login with GitHub</a></li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <div class="dropdown user-options">
+                                <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    {{ user.username }}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Account Settings</a></li>
+                                    <li><a href="#">My Games</a></li>
+                                    <li><a href="/cart/{{ user.id }}">My Cart</a></li>
+                                    <li><a href="/logout/">Log Out</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 avatar">
+                            {% if user.avatar != '' %}
+                            <img alt="User" src="/{{ user.avatar }}">
+                            {% else %}
+                            <img alt="User" src="{% static '/sample/avatar.jpg' %}">
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div><!--/.row -->
+                </div><!--/.navbar-header -->
+            </div>
+        </nav>
+
+        <!-- Navigation
+        ================================================== -->
+        <!-- The justified navigation menu is meant for single line per list item.
+                 Multiple lines will require custom code not provided by Bootstrap. -->
+        <div class="masthead">
+            <nav>
+                <ul class="nav nav-justified">
+                    <li><a href="#">My Games</a></li>
+                    <li><a href="#">Featured</a></li>
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Adventure</a></li>
+                    <li><a href="#">Racing</a></li>
+                    <li><a href="#">RPG</a></li>
+                    <li><a href="#">Simulation</a></li>
+                    <li><a href="#">Sports</a></li>
+                    <li><a href="#">Strategy</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Game Description and Details
+        ================================================== -->
+
+        <div class="container game-summary">
+            <div class="row vcenter">
+                <div class="col-md-9">
+                    <h1>{{ game.title }}</h1>
+                </div>
+                <div class="col-md-2">
+                    <div class="buying">
+                        <h2><b>$</b> {{ game.price }}</h2>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                {% if not user.is_authenticated %}
+                    <p>Join FCP to buy games!</p>
+                {% else %}
+                    <div class="user-options" style="text-align:center">
+                        <button class="btn btn-lg" data-toggle="modal" data-target="#add-to-cart-modal">Add to Cart!</button>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="/{{ game.large_image }}" height="350px">
+                </div>
+                <div class="col-md-9">
+                    <p>
+                    {{ game.description }}
+                    </p>
+                    <div class="col-md-6">
+                        <h4><b>Details</b></h4>
+                        <p><b>Publisher</b>: {{ game.publisher }}</p>
+                        <p><b>Release Date</b>: {{ game.release_date }}</p>
+                        <p><b>Genre</b>: {{ game.genre }} </p>
+                        <p><b>Platform(s)</b>: 
+                            {% for i in game.platforms.all %}
+                            {{ i.text }}, 
+                            {% endfor %}
+                        </p>
+                        <p><b>Popular Tags</b>: </p>
+                        {% if not game.get_popular_tags %}
+                            <p>None</p>
+                        {% else %}
+                            <table id="tag"><tr>
+                                {% for i in game.get_popular_tags.all %}
+                                    <td id="tag"><a id="tag" href="#">{{ i.name }}</a></td>
+                                {% endfor %}
+                                <td><a href="#"> See more</a></td>
+                            </tr></table>
+                        {% endif %}
+                        <p><b>Your Tags</b>: </p>
+                        {% if purchased %}
+                        <table id="tag"><tr>
+                            {% for i in member_tags %}
+                                <td id="tag"><a id="{{ i.id }}" data-toggle="modal" data-target="#del-{{ i.id }}">{{ i.tag.name }}</a></td>
+                            {% endfor %}
+                                <td><a data-toggle="modal" data-target="#add-tag-modal"> Add Tag</a></td>
+                        </tr></table>
+                        {% else %}
+                            <p>Buy the game to add tags!</p>
+                        {% endif %}
+                    </div><!-- / misc game info -->
+                    <div class="col-md-6">
+                        <h4>Minimum System Requirements</h4>
+                        <ul>
+                            <li>OS: Windows 7/8.1/10 (64-bit Version)</li>
+                            <li>Processor: Intel i5-750/AMD Phenom II X4-945</li>
+                            <li>Memory: 8 GB RAM</li>
+                            <li>Graphics: NVIDIA GTX 470 1GB /AMD HD 7870 2GB</li>
+                            <li>Storage: 12 GB available space</li>
+                        </ul>
+                        <br>
+                        <h4>Recommended System Requirements</h4>
+                        <ul>
+                            <li>OS: Windows 7/8.1/10 (64-bit Version)</li>
+                            <li>Processor: Intel i5-2400/AMD FX-8320</li>
+                            <li>Memory: 8 GB RAM</li>
+                            <li>Graphics: NVIDIA GTX 780 3GB /AMD R9 290 4GB</li>
+                            <li>Storage: 12 GB available space</li>
+                        </ul>
+                    </div><!-- / system requirements -->
+                </div><!-- / all game info -->
+            </div><!-- /game info plus picture -->
+        </div> <!-- /container -->
+
+        <hr>
+
+        <div class="container"> <!-- reviews -->
+            <div class="row vcenter">
+                <div class="col-md-6">
+                    <h1>User Reviews</h1>
+                </div>
+                <div class="col-md-5">
+                    <div class="user-options"><button class="btn btn-lg" type="button">Add Review</button></div>
+                </div>
+                <div class="col-md-1">
+                    <div class="dropdown user-options">
+                        <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Sort By
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Newest</a></li>
+                            <li><a href="#">Oldest</a></li>
+                            <li><a href="#">Highest Score</a></li>
+                            <li><a href="#">Lowest Score</a></li>
+                            <li><a href="#">Most Helpful</a></li>
+                            <li><a href="#">Least Helpful</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row vcenter">
+                <div class="col-md-2 avatar">
+                    <img alt="User" src="./sample/avatar.jpg" width="30%">
+                </div>
+                <div class="col-md-2">
+                    <p><font size=5><a href="#">Username</a></font></p>
+                    <p><font size=4><b>Score: </b>10 / 10</font></p>
+                </div>
+                <div class="col-md-8">
+                    <a href="#"><p><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 100</p></a>
+                    <a href="#"><p><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> 2,000,000</p></a>
+                    <a href="#"><p>Report User</p></a>
+                </div>
+
+            </div>
+            <br>
+            <p>
+            Maecenas lacinia sem at eros accumsan, non sagittis ex pellentesque. 
+            Integer ante leo, eleifend a sollicitudin vehicula, dapibus non libero. 
+            Nullam tincidunt auctor dui, in feugiat mi venenatis a. 
+            Quisque ut diam nulla. 
+            Vestibulum vel nibh a urna gravida blandit quis a sem. 
+            Curabitur efficitur justo non augue lacinia, quis gravida est tempus. 
+            Aenean ut diam eget nisi varius rhoncus. 
+            Curabitur ultricies ligula sit amet ipsum aliquet, at molestie sapien pharetra. 
+            Nam hendrerit libero non augue posuere, in vulputate quam pellentesque. 
+            Sed vulputate orci eu mauris congue molestie. 
+            Sed sodales mauris nec enim interdum, quis sodales risus pulvinar. 
+            Proin maximus metus sed purus tincidunt, id gravida ipsum blandit. 
+            Aliquam vitae dignissim libero. Nulla placerat interdum dui, non malesuada arcu vulputate quis. 
+            Suspendisse in tortor vel eros condimentum faucibus. 
+            </p>
+
+            <hr>
+        </div> <!-- /reviews -->
+
+        <div class="container page-nav">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div><!-- /page navigation -->
+
+        <footer>
+            <p>&copy; 2017 Deatech, Inc.</p>
+        </footer>
+
+        <!-- Modal to add game to cart-->
+        <div class="modal fade" id="add-to-cart-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add to Cart</h4>
+                    </div>
+                    <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                        <div class="modal-body">
+                            {{ cartform }}
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" value="Add to Cart" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal to add new tag-->
+        <div class="modal fade" id="add-tag-modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">New Tag</h4>
+                    </div>
+                    <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                        <div class="modal-body">
+                            {{ newtagform }}
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" value="Add New Tag" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal(s) to delete tag(s)-->
+        {% for i in member_tags %}
+        <div class="modal fade" id="del-{{ i.id }}"  role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Delete Tag</h4>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the tag <i>{{ i.tag.name }}</i>?
+                    </div>
+                    <div class="modal-footer">
+                        <div class="user-options">
+                            <form method="post" action="/game/delete-tag/{{ game.id }}/{{ i.id }}/">{% csrf_token %}
+                                <button class="btn" type="submit">Yes</button>
+                            </form>
+                            <button class="btn" type="button" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </body>
+</html>
