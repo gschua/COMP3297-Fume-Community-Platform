@@ -42,6 +42,7 @@ Final Project for the course COMP3297: Introduction to Software Engineering
  - Upon first registering with the FCP, get a free 5 rewards (requirement by TAs, but not written in project description).
 
 ## New and Edited files:
+```
 /accounts/views.py
 /fume/forms.py
 /fume/models.py
@@ -53,6 +54,7 @@ Final Project for the course COMP3297: Introduction to Software Engineering
 /vapoursite/settings.py
 /vapoursite/urls.py
 /vapoursite/views.py
+```
 
 ## Other changes:
  - Deleted /templates/vapoursite/deprecated because they're identical to the UI Prototypes
@@ -67,6 +69,7 @@ Final Project for the course COMP3297: Introduction to Software Engineering
  - 4 Spaces instead of 1 Tab.
 
 ## To-do List (that's not in the Project Description probably):
+ - TAGGING SYSTEM
  - Figure out how to move all forms out of /vapoursite/views.py without breaking everything because right now it's cluttered and that's bad practice
  - Lots of uploaded pictures end up being named "None*" which is weird but images are retrieved just fine so not really a huge issue.
  - Make a navbar.html so no need to keep copy-pasting the navbar everywhere
