@@ -137,15 +137,32 @@
         {% if user.is_authenticated %}
         <div class="alert alert-warning alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <table><tr>
+            <table>
+                <tr>
                 <td id="reward"><a class="alert-link" href="#"><b><font size="5">REWARDS</font></b></a></td>
                 <td id="reward">
                     <b>Number of Rewards:</b> {{ user.get_reward_count }}<br>
                     {% if user.get_next_reward_expiry %}
-                    <b>Expiration of Next Reward:</b> {{ user.get_next_reward_expiry }}
+                    <b>Expiration of Next Reward:</b> {{ user.get_next_reward_expiry }}<br>
                     {% endif %}
+                    <b>Spending needed for next Reward:</b>$ {{ user.get_needed_spending }}
                 </td>
-            </tr></table>
+                </tr>
+                {% if user.get_reward_count > 0 %}
+                    <tr>
+                        <td id="reward"><b>ID</b></td>
+                        <td id="reward"><b>Awarded</b></td>
+                        <td id="reward"><b>Expiry</b></td>
+                    </tr>
+                    {% for rew in user_rewards %}
+                    <tr>
+                        <td id="reward">{{ rew.id }}</td>
+                        <td id="reward">{{ rew.award_date }}</td>
+                        <td id="reward">{{ rew.expiry_date }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
         </div>
         {% endif %}
 

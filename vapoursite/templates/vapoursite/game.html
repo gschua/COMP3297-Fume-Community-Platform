@@ -31,7 +31,7 @@
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
- 	 	<!-- CSS -->
+        <!-- CSS -->
         <link href="{% static '/style/main.css' %}" rel="stylesheet">
         <link href="{% static '/style/game.css' %}" rel="stylesheet">
 
@@ -113,28 +113,28 @@
             </div>
         </nav>
 
-		<!-- Navigation
-		================================================== -->
-		<!-- The justified navigation menu is meant for single line per list item.
-				 Multiple lines will require custom code not provided by Bootstrap. -->
-		<div class="masthead">
-			<nav>
-				<ul class="nav nav-justified">
-					<li><a href="#">My Games</a></li>
-					<li><a href="#">Featured</a></li>
-					<li><a href="#">Action</a></li>
-					<li><a href="#">Adventure</a></li>
-					<li><a href="#">Racing</a></li>
-					<li><a href="#">RPG</a></li>
-					<li><a href="#">Simulation</a></li>
-					<li><a href="#">Sports</a></li>
-					<li><a href="#">Strategy</a></li>
-				</ul>
-			</nav>
-		</div>
+        <!-- Navigation
+        ================================================== -->
+        <!-- The justified navigation menu is meant for single line per list item.
+                 Multiple lines will require custom code not provided by Bootstrap. -->
+        <div class="masthead">
+            <nav>
+                <ul class="nav nav-justified">
+                    <li><a href="#">My Games</a></li>
+                    <li><a href="#">Featured</a></li>
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Adventure</a></li>
+                    <li><a href="#">Racing</a></li>
+                    <li><a href="#">RPG</a></li>
+                    <li><a href="#">Simulation</a></li>
+                    <li><a href="#">Sports</a></li>
+                    <li><a href="#">Strategy</a></li>
+                </ul>
+            </nav>
+        </div>
 
-		<!-- Game Description and Details
-		================================================== -->
+        <!-- Game Description and Details
+        ================================================== -->
 
         <div class="container game-summary">
             <div class="row vcenter">
@@ -159,11 +159,11 @@
             <hr>
             <div class="row">
                 <div class="col-md-3">
-					<img src="/{{ game.large_image }}" height="350px">
+                    <img src="/{{ game.large_image }}" height="350px">
                 </div>
                 <div class="col-md-9">
                     <p>
-					{{ game.description }}
+                    {{ game.description }}
                     </p>
                     <div class="col-md-6">
                         <h4><b>Details</b></h4>
@@ -180,18 +180,18 @@
                             <p>None</p>
                         {% else %}
                             <table id="tag"><tr>
-							    {% for i in game.get_popular_tags.all %}
-								    <td id="tag"><a id="tag" href="#">{{ i.name }}</a></td>
-							    {% endfor %}
+                                {% for i in game.get_popular_tags.all %}
+                                    <td id="tag"><a id="tag" href="#">{{ i.name }}</a></td>
+                                {% endfor %}
                                 <td><a href="#"> See more</a></td>
                             </tr></table>
                         {% endif %}
                         <p><b>Your Tags</b>: </p>
                         {% if purchased %}
                         <table id="tag"><tr>
-							{% for i in member_tags %}
-								<td id="tag"><a id="tag" data-toggle="modal" data-dismiss="modal" data-target="#mod-del-tag">{{ i.tag.name }}</a></td>
-							{% endfor %}
+                            {% for i in member_tags %}
+                                <td id="tag"><a id="tag" data-toggle="modal" data-dismiss="modal" data-target="#mod-del-tag">{{ i.tag.name }}</a></td>
+                            {% endfor %}
                                 <td><a data-toggle="modal" data-target="#add-tag-modal"> Add Tag</a></td>
                         </tr></table>
                         {% else %}
@@ -307,12 +307,9 @@
             </nav>
         </div><!-- /page navigation -->
 
- 	 	<footer>
- 	 	 	<p>&copy; 2017 Deatech, Inc.</p>
- 	 	</footer>
-
-        <!-- FOR SOME REASON, ONLY ONE MODAL WORKS AT A TIME, MUST BE FIXED
-             if you want to see how one works, just comment out the one you don't want below -->
+        <footer>
+            <p>&copy; 2017 Deatech, Inc.</p>
+        </footer>
 
         <!-- Modal to add game to cart-->
         <div class="modal fade" id="add-to-cart-modal" role="dialog">
@@ -323,15 +320,15 @@
                     <h4 class="modal-title">Add to Cart</h4>
                 </div>
                 <div class="modal-body">
-						<form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                        <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
                             {{ cartform }}
                             <input type="submit" value="Add to Cart" />
-						</form>
-					</div>
-				    <div class="modal-footer">
-				    </div>
-				</div>
-			</div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Modal to add new tag-->
@@ -343,12 +340,11 @@
                     <h4 class="modal-title">Add Tag</h4>
                 </div>
                 <div class="modal-body">
-				    <div class="modal-footer">
-				    </div>
-				</div>
-			</div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
         </div>
-
 
     </body>
 </html>

@@ -43,9 +43,6 @@ def register_view(request):
 
         for i in range(0, 5):
             new_reward = Reward()
-            new_reward.award_date = timezone.now()
-            new_reward.expiry_date = timezone.now()
-            new_reward.status = 'act'
             new_reward.member = user
             new_reward.save()
 

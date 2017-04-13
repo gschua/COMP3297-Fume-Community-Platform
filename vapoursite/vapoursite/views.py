@@ -8,7 +8,7 @@ from django.contrib.auth import (
     login,
     logout,
     )
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils import timezone
 
 from fume.models import Member, Game, Reward, Transaction, Tag, MemberTag, Platform
@@ -16,10 +16,15 @@ from fume.forms import AddToCartForm, NewTagForm
 
 
 def main_view(request):
+    user = request.user
+    user_rewards = []
+    if user.is_authenticated:
+        user_rewards = Reward.objects.filter(member=user).filter(Q(status='act')|Q(status='car')).order_by('expiry_date')
     template = loader.get_template('vapoursite/main.html')
     context = {
-        'user': request.user,
+        'user': user,
         'featured': Game.objects.filter(featured=True),
+        'user_rewards': user_rewards,
     }
     return HttpResponse(template.render(context, request))
 
@@ -146,9 +151,6 @@ def checkout(request):
     while spending >= reward_threshold:
         spending -= reward_threshold
         new_reward = Reward()
-        new_reward.award_date = timezone.now()
-        new_reward.expiry_date = timezone.now()
-        new_reward.status = 'act'
         new_reward.member = member
         new_reward.save()
     member.acc_spending = spending

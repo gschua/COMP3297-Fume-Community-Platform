@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractBaseUser, UserManager, Permission
 import os
 
 reward_threshold=100
+reward_expiry=120   # in days
 
 #rename the filename and path to 'static/$attribute/$instance_id.ext'
 def avatar_handler(instance, filename):
@@ -162,13 +163,13 @@ class Member(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return self.username
     def get_reward_count(self):
-        return self.reward_set.filter(status='act').count()
+        return self.reward_set.filter(Q(status='act')|Q(status='car')).count()
     def get_next_reward_expiry(self):
-        return self.reward_set.earliest('expiry_date').expiry_date
+        return self.reward_set.filter(Q(status='act')|Q(status='car')).earliest('expiry_date').expiry_date
     def get_recommended_games(self):
         return find_recommended_games(self)
     def get_needed_spending(self):
-        return float(reward_threshold) - self.acc_spending
+        return round(float(reward_threshold) - self.acc_spending, 1)
 
 
 class Transaction(models.Model):
@@ -222,7 +223,7 @@ class Reward(models.Model):
         ('car', 'Cart'),
     )
     award_date = models.DateField('Date of Awarding', default=timezone.now)
-    expiry_date = models.DateField('Date of Expiry', default=timezone.now)
+    expiry_date = models.DateField('Date of Expiry', default=timezone.now() + timezone.timedelta(days=reward_expiry))
     status = models.CharField(max_length=3, choices=REWARD_STATUSES, default='act')
     member = models.ForeignKey(Member, null=True)
     transaction = models.ForeignKey(Transaction, null=True, blank=True)
