@@ -228,7 +228,7 @@
                                 </div>
                                 <p>{{ entry.description_short }}</p>
                                 <p><b>Platform</b>:
-                                    {% for i in entry.platform.all %}
+                                    {% for i in entry.platforms.all %}
                                     {{ i.text }}, 
                                     {% endfor %}
                                 </p>

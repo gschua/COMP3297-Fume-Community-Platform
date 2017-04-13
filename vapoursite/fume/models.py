@@ -197,7 +197,7 @@ class Tag(models.Model):
 
 class MemberTag(models.Model):
     def __str__(self):
-        return str(self.tag.name) + ' by ' + str(self.member.username) + ' for ' + str(self.game.title)
+        return str(self.tag.name)
     tag = models.ForeignKey(Tag, null=True)
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
