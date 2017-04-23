@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from .views import (main_view, game_view, cart_view)
-from .views import (delete_from_cart, empty_cart, checkout)
+from .views import (delete_tag, delete_from_cart, empty_cart, checkout)
 from accounts.views import (login_view, register_view, logout_view)
 #from fume.views import (addtocart_view)
 from django.conf import settings
@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^logout/', logout_view, name='logout'),
     url(r'^register/', register_view, name='register'),
     url(r'^game/(?P<game_id>\d+)/', game_view, name='game'),
+    url(r'^game/delete-tag/(?P<game_id>\d+)/(?P<member_tag_id>\d+)/', delete_tag, name='deleteTag'),
 	#url(r'^game/addgame/(?P<game_id>\d+)/(?P<member_id>\d+)/', addtocart_view, name='addtocart'),
     url(r'^cart/(?P<member_id>\d+)/', cart_view, name='cart'),
     url(r'^cart/delete/(?P<transaction_id>\d+)', delete_from_cart, name='delFromCart'),

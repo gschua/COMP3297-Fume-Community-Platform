@@ -153,8 +153,8 @@
                     <div class="user-options" style="text-align:center">
                         <button class="btn btn-lg" data-toggle="modal" data-target="#add-to-cart-modal">Add to Cart!</button>
                     </div>
-                </div>
                 {% endif %}
+                </div>
             </div>
             <hr>
             <div class="row">
@@ -190,7 +190,7 @@
                         {% if purchased %}
                         <table id="tag"><tr>
                             {% for i in member_tags %}
-                                <td id="tag"><a id="tag" data-toggle="modal" data-dismiss="modal" data-target="#mod-del-tag">{{ i.tag.name }}</a></td>
+                                <td id="tag"><a id="{{ i.id }}" data-toggle="modal" data-target="#del-{{ i.id }}">{{ i.tag.name }}</a></td>
                             {% endfor %}
                                 <td><a data-toggle="modal" data-target="#add-tag-modal"> Add Tag</a></td>
                         </tr></table>
@@ -315,18 +315,18 @@
         <div class="modal fade" id="add-to-cart-modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Add to Cart</h4>
-                </div>
-                <div class="modal-body">
-                        <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add to Cart</h4>
+                    </div>
+                    <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                        <div class="modal-body">
                             {{ cartform }}
+                        </div>
+                        <div class="modal-footer">
                             <input type="submit" value="Add to Cart" />
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -335,16 +335,46 @@
         <div class="modal fade" id="add-tag-modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Add Tag</h4>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">New Tag</h4>
+                    </div>
+                    <form method="post" action="{% url 'game' game.id %}">{% csrf_token %}
+                        <div class="modal-body">
+                            {{ newtagform }}
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" value="Add New Tag" />
+                        </div>
+                    </form>
                 </div>
-                <div class="modal-body">
+            </div>
+        </div>
+
+        <!-- Modal(s) to delete tag(s)-->
+        {% for i in member_tags %}
+        <div class="modal fade" id="del-{{ i.id }}"  role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Delete Tag</h4>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the tag <i>{{ i.tag.name }}</i>?
+                    </div>
                     <div class="modal-footer">
+                        <div class="user-options">
+                            <form method="post" action="/game/delete-tag/{{ game.id }}/{{ i.id }}/">{% csrf_token %}
+                                <button class="btn" type="submit">Yes</button>
+                            </form>
+                            <button class="btn" type="button" data-dismiss="modal">No</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
 
     </body>
 </html>
