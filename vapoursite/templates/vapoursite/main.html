@@ -17,7 +17,7 @@
         <link rel="icon" href="../../favicon.ico">
         -->
 
-        <title>Main Page</title>
+        <title>Main</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
@@ -32,8 +32,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <!-- Custom styles for this template, renamed because -->
-        <link href="{% static "style/prototype.css" %}" rel="stylesheet">
-
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
 
     </head>
 
@@ -53,15 +52,14 @@
                     <div class="row vcenter">
                         <div class="col-md-2">
                             <a href="/">
-                                <img alt="Fume Community Platform" src="{% static "sample/logo.png" %}" width="50%" position="relative">
+                                <img alt="Fume Community Platform" src="{% static '/sample/logo.png' %}" width="50%" position="relative">
                             </a>
                         </div>
                         <div class="col-md-5">
                             <div class="input-group">
                                 <span class="dropdown-search input-group-btn">
                                     <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Search Type
-                                        <span class="caret"></span>
+                                        Search Type<span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                         <li><a href="#">Title</a></li>
@@ -86,28 +84,29 @@
                             </ul>
                         </div>
                         {% else %}
-                            <div class="col-md-2">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
                             <div class="dropdown user-options">
                                 <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     {{ user.username }}
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="./account.html">Account Settings</a></li>
+                                    <li><a href="#">Account Settings</a></li>
                                     <li><a href="#">My Games</a></li>
-                                    <li><a href="./cart.html">My Cart</a></li>
+                                    <li><a href="/cart/{{ user.id }}/">My Cart</a></li>
                                     <li><a href="/logout/">Log Out</a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="col-md-2 avatar">
                             {% if user.avatar != '' %}
-                            <img alt="User" src="{{user.avatar}}">
+                            <img alt="User" src="{{ user.avatar }}">
                             {% else %}
-                            <img alt="User" src="{% static "sample/avatar.jpg" %}">
+                            <img alt="User" src="{% static '/sample/avatar.jpg' %}">
                             {% endif %}
-                        {% endif %}
                         </div>
+                        {% endif %}
                     </div><!--/.row -->
                 </div><!--/.navbar-header -->
             </div>
@@ -132,20 +131,41 @@
             </nav>
         </div>
 
-
         <!-- Rewards Alert
         ================================================== -->
         <!-- See if possible to add image -->
         {% if user.is_authenticated %}
         <div class="alert alert-warning alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <table><tr>
-                <td id="reward"><a class="alert-link" href="./rewards.html"><b><font size="5">REWARDS</font></b></a></td>
-                <td id="reward"><b>Number of Rewards:</b> 23<br><b>Expiration of Next Reward:</b> 2017/03/15</td>
-            </tr></table>
-
+            <table>
+                <tr>
+                <td id="reward"><a class="alert-link" href="#"><b><font size="5">REWARDS</font></b></a></td>
+                <td id="reward">
+                    <b>Number of Rewards:</b> {{ user.get_reward_count }}<br>
+                    {% if user.get_next_reward_expiry %}
+                    <b>Expiration of Next Reward:</b> {{ user.get_next_reward_expiry }}<br>
+                    {% endif %}
+                    <b>Spending needed for next Reward:</b>$ {{ user.get_needed_spending }}
+                </td>
+                </tr>
+                {% if user.get_reward_count > 0 %}
+                    <tr>
+                        <td id="reward"><b>ID</b></td>
+                        <td id="reward"><b>Awarded</b></td>
+                        <td id="reward"><b>Expiry</b></td>
+                    </tr>
+                    {% for rew in user_rewards %}
+                    <tr>
+                        <td id="reward">{{ rew.id }}</td>
+                        <td id="reward">{{ rew.award_date }}</td>
+                        <td id="reward">{{ rew.expiry_date }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
         </div>
         {% endif %}
+
         <!-- Carousel: Will Show Featured Games
         ================================================== -->
         <div id="myCarousel" class="carousel slide" data-ride="carousel">
@@ -157,18 +177,18 @@
             </ol>
             <div class="carousel-inner" role="listbox">
                 <div class="item active">
-                    <a href="./game-detail.html">
-                        <img class="first-slide" src="{% static "sample/banner1.jpg" %}" alt="Game Title 1">
+                    <a href="/game/">
+                        <img class="first-slide" src="{% static '/sample/banner1.jpg' %}" alt="Game Title 1">
                     </a>
                 </div>
                 <div class="item">
-                    <a href="./game-detail.html">
-                        <img class="second-slide" src="{% static "sample/banner2.jpg" %}" alt="Game Title 2">
+                    <a href="#">
+                        <img class="second-slide" src="{% static '/sample/banner2.jpg' %}" alt="Game Title 2">
                     </a>
                 </div>
                 <div class="item">
-                    <a href="./game-detail.html">
-                        <img class="third-slide" src="{% static "sample/banner3.jpg" %}" alt="Game Title 3">
+                    <a href="#">
+                        <img class="third-slide" src="{% static '/sample/banner3.jpg' %}" alt="Game Title 3">
                     </a>
                 </div>
             </div>
@@ -182,156 +202,85 @@
             </a>
         </div><!-- /.carousel -->
 
-
         <div class="container">
             <div class="row">
                 <div class="col-md-5">
-                    <h1>Hot:</h1>
+                    <h1>Featured:</h1>
                     <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game1" src="{% static "sample/game1.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 1</h3></a>
-                                </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$1,000</font><font size="0.5">.00</font></p>
-                                </div>
+                    {% if not featured %}
+                        <h3>None</h3>
+                    {% else %}
+                    {% for entry in featured %}
+                        <div class="row vcenter">
+                            <div class="col-md-4">
+                                <a href="/game/{{ entry.id }}">
+                                    <img src="{{ entry.small_image }}" width="100%">
+                                </a>
                             </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows, Mac</p>
-                            <p><b>Genre</b>: Strategy, RPG</p>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game2" src="{% static "sample/game2.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 2</h3></a>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <a href="/game/{{ entry.id }}"><h3>{{ entry.title }}</h3></a>
+                                    </div>
+                                    <div class="col-md-3" id="price">
+                                        <p><font size="3">${{ entry.price }}</font></p>
+                                    </div>
                                 </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$3,000</font><font size="0.5">.00</font></p>
-                                </div>
+                                <p>{{ entry.description_short }}</p>
+                                <p><b>Platform</b>:
+                                    {% for i in entry.platform.all %}
+                                    {{ i.text }}, 
+                                    {% endfor %}
+                                </p>
+                                <p><b>Genre</b>: {{ entry.genre }}</p>
                             </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows, Mac</p>
-                            <p><b>Genre</b>: Racing</p>
                         </div>
-                    </div>
-                    <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game3" src="{% static "sample/game3.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 3</h3></a>
-                                </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$1,234</font><font size="0.5">.56</font></p>
-                                </div>
-                            </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows</p>
-                            <p><b>Genre</b>: Action, Adventure</p>
-                        </div>
-                    </div>
-                    <hr>
-
+                        <hr>
+                    {% endfor %}
+                    {% endif %}
                 </div>
-
-                <div class="col-md-1">
-                </div>
-
+                <div class="col-md-1"></div>
                 <div class="col-md-5">
                     <h1>Recommended for you:</h1>
                     <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game1" src="{% static "sample/game1.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 1</h3></a>
-                                </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$1,000</font><font size="0.5">.00</font></p>
-                                </div>
+                    {% if not user.get_recommended_games %}
+                        <h3>None</h3>
+                    {% else %}
+                    {% for entry in user.get_recommended_games %}
+                        <div class="row vcenter">
+                            <div class="col-md-4">
+                                <a href="/game/{{ entry.id }}">
+                                    <img src="{{ entry.small_image }}" width="100%">
+                                </a>
                             </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows, Mac</p>
-                            <p><b>Genre</b>: Strategy, RPG</p>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game2" src="{% static "sample/game2.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 2</h3></a>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <a href="/game/{{ entry.id }}"><h3>{{ entry.title }}</h3></a>
+                                    </div>
+                                    <div class="col-md-3" id="price">
+                                        <p><font size="3">${{ entry.price }}</font></p>
+                                    </div>
                                 </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$3,000</font><font size="0.5">.00</font></p>
-                                </div>
+                                <p>{{ entry.description_short }}</p>
+                                <p><b>Platform</b>:
+                                    {% for i in entry.platform.all %}
+                                    {{ i.text }}, 
+                                    {% endfor %}
+                                </p>
+                                <p><b>Genre</b>: {{ entry.genre }}</p>
                             </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows, Mac</p>
-                            <p><b>Genre</b>: Racing</p>
                         </div>
-                    </div>
-                    <hr>
-
-                    <div class="row vcenter">
-                        <div class="col-md-4">
-                            <a href="./game-detail.html"><img alt="Game3" src="{% static "sample/game3.jpg" %}" width="100%"></a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <a href="./game-detail.html"><h3>Game Title 3</h3></a>
-                                </div>
-                                <div class="col-md-3" id="price">
-                                    <p><font size="3">$1,234</font><font size="0.5">.56</font></p>
-                                </div>
-                            </div>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, met risus.</p>
-                            <p><b>Platforms</b>: Windows</p>
-                            <p><b>Genre</b>: Action, Adventure</p>
-                        </div>
-                    </div>
-                    <hr>
-
+                        <hr>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div> <!-- /container -->
 
         <footer>
-            <p>&copy; 2016 Company, Inc.</p>
+            <p>&copy; 2017 Deatech, Inc.</p>
         </footer>
 
-        <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="../../sample/js/vendor/jquery.min.js"><\/script>')</script>
-        <script src="../../dist/js/bootstrap.min.js"></script>
-
-    </body>
+     </body>
 </html>

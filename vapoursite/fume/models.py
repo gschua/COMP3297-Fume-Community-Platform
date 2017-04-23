@@ -1,10 +1,14 @@
 from django.db import models
 from django.utils import timezone
+from django.db.models import Q
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 
 import os
+
+reward_threshold=100
+reward_expiry=120   # in days
 
 #rename the filename and path to 'static/$attribute/$instance_id.ext'
 def avatar_handler(instance, filename):
@@ -41,26 +45,79 @@ def large_image_handler(instance, filename):
 #        user.is_staff = True
 #        user.save(using=self._db)
 
+
+# find recommended games based on last 3 purchases of member
+def find_recommended_games(instance):
+
+    recommended = []
+    all_transactions = Transaction.objects.filter(member=instance).filter(is_purchased=True).order_by('-purchase_datetime')
+
+    all_purchased = all_transactions.values_list('game', flat=True)
+    unbought = Game.objects.exclude(id__in=all_purchased)   # all games not yet purchased by this member
+
+    # get 3 latest purchases (without duplicate titles)
+    latest_transactions = all_transactions
+    gameIDhold = set()
+    temp = []
+    for t in latest_transactions:
+        if t.game.id not in gameIDhold:
+            temp.append(t)
+            gameIDhold.add(t.game.id)
+    latest_transactions = temp[:3]
+
+    for purchase in latest_transactions:
+        if not unbought:    # no possible games to recommend
+            break
+        purchase_tags = purchase.game.tag_set.all()
+        current_count = 0
+        closest = Game.objects.get(id=1)  # need some default
+        for this_game in unbought:
+            game_tags = this_game.tag_set.all()
+            count = 0
+            for tag in purchase_tags:
+                if tag in game_tags:
+                    count+=1
+            if count >= current_count:
+                closest = this_game
+                current_count = count
+        recommended.append(closest)
+        unbought = unbought.exclude(id=closest.id)  # if game is chosen for recommendation, remove to avoid getting chosen again
+    return recommended
+
+
+# finds 3 tags with highest occurrence for the game
+# not done
+def find_popular_tags(instance):
+    popular = []
+    game_tags = instance.tag_set.all()[:3]
+    member_tags = MemberTag.objects.filter(game=instance).filter(tag__in=game_tags)
+    return game_tags
+
+
 class Admin(models.Model):
     def __str__(self):
         return self.username
     username = models.CharField(max_length=30)
     password = models.CharField(max_length=30)
 
+
 class Publisher(models.Model):
     def __str__(self):
         return self.name
     name = models.CharField(max_length=254)
+
 
 class Genre(models.Model):
     def __str__(self):
         return self.text
     text = models.CharField(max_length=30)
 
+
 class Platform(models.Model):
     def __str__(self):
         return self.text
     text = models.CharField(max_length=30)
+
 
 class Game(models.Model):
     def __str__(self):
@@ -75,8 +132,11 @@ class Game(models.Model):
     small_image = models.ImageField(upload_to=small_image_handler)
     publisher = models.ForeignKey(Publisher, null=True)
     genre = models.ForeignKey(Genre, null=True)
-    platform = models.ManyToManyField(Platform)
+    platforms = models.ManyToManyField(Platform)
     featured = models.BooleanField(default=False)
+    def get_popular_tags(self):
+        return find_popular_tags(self)
+
 
 class Member(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
@@ -93,7 +153,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     #is_superuser = models.BooleanField(default=False)
     last_login = models.DateTimeField('Date/time of last login', null=True, blank=True)
-    date_joined = models.DateTimeField('Date/time of registeration', default=timezone.now)
+    date_joined = models.DateTimeField('Date/time of registration', default=timezone.now)
     REQUIRED_FIELDS = ['email']
     USERNAME_FIELD = 'username'
     PASSWORD_FIELD = 'password'
@@ -103,19 +163,29 @@ class Member(AbstractBaseUser, PermissionsMixin):
         return self.screen_name
     def get_full_name(self):
         return self.username
-
+    def get_reward_count(self):
+        return self.reward_set.filter(Q(status='act')|Q(status='car')).count()
+    def get_next_reward_expiry(self):
+        return self.reward_set.filter(Q(status='act')|Q(status='car')).earliest('expiry_date').expiry_date
+    def get_recommended_games(self):
+        return find_recommended_games(self)
+    def get_needed_spending(self):
+        return round(float(reward_threshold) - self.acc_spending, 1)
 
 
 class Transaction(models.Model):
     def __str__(self):
-        return self.purchase_datetime
-    games = models.ForeignKey(Game, null=True)
+        return str(self.member)+ '-' + str(self.purchase_datetime)
+    game = models.ForeignKey(Game, null=True)
     member = models.ForeignKey(Member, null=True)
     platform = models.ForeignKey(Platform, null=True)
-    price = models.FloatField(default=0.0)
+    price = models.FloatField(default=0.0)  # refers to price BEFORE rewards discounts
     rewards_used = models.IntegerField(default=0)
     is_purchased = models.BooleanField(default=False)
     purchase_datetime = models.DateTimeField('Date of Purchase', default=timezone.now)
+    def get_discount_price(self):
+        return round(self.price * ( 1.0 - 0.1 * float(self.rewards_used) ), 1)
+
 
 class Tag(models.Model):
     def __str__(self):
@@ -124,12 +194,14 @@ class Tag(models.Model):
     #count = models.IntegerField(default=1)
     games = models.ManyToManyField(Game)
 
+
 class MemberTag(models.Model):
     def __str__(self):
-        return str(self.tag.name)+' by '+str(self.member.username)
+        return str(self.tag.name) + ' by ' + str(self.member.username) + ' for ' + str(self.game.title)
     tag = models.ForeignKey(Tag, null=True)
-    member =models.ForeignKey(Member, null=True)
+    member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
+
 
 class Review(models.Model):
     def __str__(self):
@@ -141,6 +213,7 @@ class Review(models.Model):
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
 
+
 class Reward(models.Model):
     def __str__(self):
         return str(self.id)
@@ -148,9 +221,10 @@ class Reward(models.Model):
         ('act', 'Active'),
         ('exp', 'Expired'),
         ('use', 'Used'),
+        ('car', 'Cart'),
     )
     award_date = models.DateField('Date of Awarding', default=timezone.now)
-    expiry_date = models.DateField('Date of Expiry', default=timezone.now)
+    expiry_date = models.DateField('Date of Expiry', default=timezone.now() + timezone.timedelta(days=reward_expiry))
     status = models.CharField(max_length=3, choices=REWARD_STATUSES, default='act')
     member = models.ForeignKey(Member, null=True)
     transaction = models.ForeignKey(Transaction, null=True, blank=True)
@@ -178,6 +252,4 @@ def save_file(sender, instance, created, **kwargs):
         else:
             instance.large_image = getattr(instance, _UNSAVED_IMAGEFIELD)
             instance.small_image = getattr(instance, _UNSAVED_IMAGEFIELD)
-            instance.save() 
-
-    
+            instance.save()

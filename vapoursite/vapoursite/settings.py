@@ -28,7 +28,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "crispy_forms",
+    'crispy_forms',
+	'social_django',
     'fume.apps.FumeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -119,7 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, 'static'),
     '/var/www/static/',
 ]
 
