@@ -9,7 +9,7 @@ class AddToCartForm(forms.ModelForm):
 		fields = [ 'platform' ]
 
 class NewTagForm(forms.ModelForm):
-	text = forms.CharField(label='Add Tag')
+	name = forms.CharField(label='Add Tag')
 	class Meta:
 		model = Tag
-		fields = [ 'text' ]
+		fields = [ 'name' ]

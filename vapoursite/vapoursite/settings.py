@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'crispy_forms',
-	'social_django',
+	#'social_django',
     'fume.apps.FumeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -138,3 +138,5 @@ AUTHENTICATION_BACKENDS = (
 'social.backends.github.GithubOAuth2',
 'django.contrib.auth.backends.ModelBackend',
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
