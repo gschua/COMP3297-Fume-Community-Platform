@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from .views import (main_view, game_view, cart_view)
-from .views import (delete_tag, delete_from_cart, empty_cart, checkout)
-from accounts.views import (login_view, register_view, logout_view)
+from .views import (delete_tag, delete_from_cart, empty_cart, checkout, manage_featured_games)
+from accounts.views import (login_view, register_view, logout_view, change_email_view)
 #from fume.views import (addtocart_view)
 from django.conf import settings
 from django.conf.urls.static import static
@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^accounts/login/$', login_view, name='login'),
     url(r'^logout/', logout_view, name='logout'),
     
+    url(r'^accounts/change_email/$', change_email_view, name='change_email'),
 
     url(r'^password_reset/$', auth_views.password_reset, name='password_reset'),
     url(r'^password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
@@ -45,6 +46,8 @@ urlpatterns = [
     url(r'^cart/delete/(?P<transaction_id>\d+)', delete_from_cart, name='delFromCart'),
     url(r'^cart/empty/', empty_cart, name='emptyCart'),
     url(r'^cart/checkout/', checkout, name='checkout'),
+
+    url(r'^manage/featured_games/$', manage_featured_games, name='manageFeaturedGames'),
     url('', include('social.apps.django_app.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

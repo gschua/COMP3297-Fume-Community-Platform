@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import Admin, Publisher, Genre, Platform, Game, Member, Transaction, Tag, MemberTag, Review, Reward
+from .models import Publisher, Genre, Platform, Game, Member, Transaction, Tag, MemberTag, Review, Reward
 
-admin.site.register(Admin)
 admin.site.register(Publisher)
 admin.site.register(Genre)
 admin.site.register(Platform)

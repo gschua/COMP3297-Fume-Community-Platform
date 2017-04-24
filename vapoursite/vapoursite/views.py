@@ -10,10 +10,10 @@ from django.contrib.auth import (
     )
 from django.db.models import Sum, Q
 from django.utils import timezone
+from django.forms import modelformset_factory, TextInput, CheckboxInput
 
 from fume.models import Member, Game, Reward, Transaction, Tag, MemberTag, Platform
 from fume.forms import AddToCartForm, NewTagForm
-
 
 def main_view(request):
     user = request.user
@@ -23,7 +23,7 @@ def main_view(request):
     template = loader.get_template('vapoursite/main.html')
     context = {
         'user': user,
-        'featured': Game.objects.filter(featured=True),
+        'featured': Game.objects.filter(featured=True).order_by('release_date'),
         'user_rewards': user_rewards,
     }
     return HttpResponse(template.render(context, request))
@@ -207,6 +207,21 @@ def delete_tag(request, game_id, member_tag_id):
     if t2.membertag_set.count() == 0:
         t2.delete()
     return HttpResponseRedirect('/game/'+game_id+'/')
+
+def manage_featured_games(request):
+	
+	FeaturedGameFormSet = modelformset_factory(Game, fields=('title', 'featured'), widgets={'title': TextInput(attrs={'readonly': True}), 'featured': CheckboxInput(attrs={'required': False})}, extra=0)
+	form=FeaturedGameFormSet(queryset= Game.objects.all(), initial=Game.objects.values('title', 'featured'))
+	#formset=FeaturedGameFormSet(initial=[{'featured': game.featured, 'featured.label' : game.title} for game in games])
+	if request.method == 'POST':
+		form=FeaturedGameFormSet(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('')
+	else:
+		return render(request, 'vapoursite/manage.html', {'type': 'Featured games', 'form': form, 'user': request.user})
+
+
 
 
 #redirected to login page if not logged in user tries to access this view

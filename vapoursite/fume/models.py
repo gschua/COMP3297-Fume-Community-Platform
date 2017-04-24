@@ -94,13 +94,6 @@ def find_popular_tags(instance):
     return game_tags
 
 
-class Admin(models.Model):
-    def __str__(self):
-        return self.username
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=30)
-
-
 class Publisher(models.Model):
     def __str__(self):
         return self.name

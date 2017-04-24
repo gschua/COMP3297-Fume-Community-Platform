@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import (
     authenticate,
     get_user_model,
@@ -6,7 +6,7 @@ from django.contrib.auth import (
     logout,
     )
 from django.utils import timezone
-from .forms import UserLoginForm, UserRegisterForm
+from .forms import UserLoginForm, UserRegisterForm, UserChangeEmailForm
 from fume.models import Reward
 
 # Create your views here.
@@ -64,3 +64,20 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def change_email_view(request):
+    next = request.GET.get('next')
+    title = "Change email"
+    form = UserChangeEmailForm(request.POST or None)
+    user=request.user
+
+    if request.method =='POST':
+        if form.is_valid():
+            email=form.cleaned_data.get("new_email")
+            user.email=email
+            user.save()
+            if next:
+                return redirect(next)
+            return redirect("/")
+    else:
+        return render(request, "vapoursite/form.html", {"form":form, "title": title})   

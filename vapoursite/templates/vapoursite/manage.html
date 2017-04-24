@@ -17,7 +17,7 @@
         <link rel="icon" href="../../favicon.ico">
         -->
 
-        <title>{{ title }}</title>
+        <title>Management</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
@@ -115,30 +115,22 @@
                 </div><!--/.navbar-header -->
             </div>
         </nav>
-        {% if user.is_authenticated or title == 'Register' or title == 'Login' %}
 
-        {% load crispy_forms_tags %}
-
-        {% block content %}
         <div class="container">
-
-            <h1 class="form-signin-heading">{{ title }}</h1>
+        {% if user.is_staff %}
+            <h1 class="form-signin-heading">{{ type }}</h1>
             <hr/>
             <form class="form-signin" method="post" action=""> {% csrf_token %}
-                {{ form|crispy }}
-                <input type="submit" class="btn" value='{{ title }}' />
+                <table>
+                    {{ form }}
+                </table>
+                <input type="submit" class="btn" value='Save' />
             </form>
-        </div> <!-- /container -->
-        {% endblock content %}
-        {% if title == 'Login' %}
-        <div class="container">
-            <a href="/password_reset/">Forgor your password?</a>
-        </div>
-        {% endif %}
-
         {% else %}
-        <div class="container">You are not logged in</div>
+            <div class="container">You cannot visit this page because you are not identified as a staff.</div>
         {% endif %}
+        </div> <!-- /container -->
+
  	 	<footer>
  	 	 	<p>&copy; 2017 Deatech, Inc.</p>
  	 	</footer>

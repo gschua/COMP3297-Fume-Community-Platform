@@ -93,9 +93,12 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#">Account Settings</a></li>
+                                    {% if user.is_staff %}
+                                    <li><a href="/manage/featured_games/">Manage Featured Games</a></li>
+                                    {% endif %}
+                                    <li><a href="/accounts/change_email/">Email Settings</a></li>
                                     <li><a href="#">My Games</a></li>
-                                    <li><a href="/cart/{{ user.id }}">My Cart</a></li>
+                                    <li><a href="#">My Cart</a></li>
                                     <li><a href="/logout/">Log Out</a></li>
                                 </ul>
                             </div>
