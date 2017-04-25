@@ -96,17 +96,21 @@ def find_popular_tags(instance):
 
     for t in game_tags_distinct:
         tag_count = game_tags.filter(name=t).count();
-        if tag_count > count[2]:
-            if tag_count > count[1]:
-                if tag_count > count[0]:
-                    popular[0] = t
-                    count[0] = tag_count
-                else:
-                    popular[1] = t
-                    count[1] = tag_count
-            else:
-                popular[2] = t
-                count[2] = tag_count
+        if tag_count > count[0]:
+            popular[2] = popular[1]
+            popular[1] = popular[0]
+            popular[0] = t
+            count[2] = count[1]
+            count[1] = count[0]
+            count[0] = tag_count
+        elif tag_count > count[1]:
+            popular[2] = popular[1]
+            popular[1] = t
+            count[2] = count[1]
+            count[1] = tag_count
+        elif tag_count > count[2]:
+            popular[2] = t
+            count[2] = tag_count
 
     return popular
 
