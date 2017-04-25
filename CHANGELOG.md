@@ -12,6 +12,7 @@
  - Separated the header and footer on all templates into their own template files for modularization. Will no longer need to change the header in every single template whenever changes are made.
  - Seperated cart implentation into its own folder.
  - Wrote function to find most popular tags for a game.
+ - Implemeted browse purchased games.
 
 
 ### 2017-04-13
