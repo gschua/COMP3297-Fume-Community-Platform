@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from fume.models import Transaction, Platform, Tag, Game
+from fume.models import Transaction, Platform, Tag
 
 class AddToCartForm(forms.ModelForm):
 	platform = forms.ModelChoiceField(queryset=Platform.objects.all(), widget=forms.RadioSelect, to_field_name="text")

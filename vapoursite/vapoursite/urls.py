@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from .views import (main_view, game_view, cart_view)
-from .views import (delete_tag, delete_from_cart, empty_cart, checkout, manage_featured_games)
+from .views import (main_view, game_view)
+from .views import (delete_tag, manage_featured_games)
 from accounts.views import (login_view, register_view, logout_view, change_email_view)
-#from fume.views import (addtocart_view)
+from cart.views import (cart_view, delete_from_cart, empty_cart, checkout)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
