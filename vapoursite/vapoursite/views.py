@@ -30,6 +30,7 @@ def main_view(request):
     return HttpResponse(template.render(context, request))
 
 
+@login_required(login_url='/login/')
 def game_view(request, game_id):
 
     member = request.user
@@ -81,13 +82,38 @@ def game_view(request, game_id):
     return HttpResponse(template.render(context, request))
 
 
+@login_required(login_url='/login/')
+def myGames_view(request, member_id):
+    user = request.user
+    myGames= Transaction.objects.filter(member=user).filter(is_purchased=True).order_by('-purchase_datetime')
+
+    myGames_count = 0
+    total_spending = 0.0
+    total_reward_used = 0
+
+    for entry in myGames:
+        myGames_count += 1
+        total_spending += entry.get_discount_price()
+        total_reward_used += entry.rewards_used
+
+    template = loader.get_template('vapoursite/myGames.html')
+    context = {
+        'user': user,
+        'myGames': myGames,
+        'spending': total_spending,
+        'rewards': total_reward_used,
+        'games_tot': myGames_count,
+    }
+
+    return HttpResponse(template.render(context, request))
+
 def delete_tag(request, game_id, tag_id):
     Tag.objects.get(id=tag_id).delete()
     return HttpResponseRedirect('/game/'+game_id+'/')
 
 
 def manage_featured_games(request):
-	
+
 	FeaturedGameFormSet = modelformset_factory(Game, fields=('title', 'featured'), widgets={'title': TextInput(attrs={'readonly': True}), 'featured': CheckboxInput(attrs={'required': False})}, extra=0)
 	form=FeaturedGameFormSet(queryset= Game.objects.all(), initial=Game.objects.values('title', 'featured'))
 	#formset=FeaturedGameFormSet(initial=[{'featured': game.featured, 'featured.label' : game.title} for game in games])
@@ -108,4 +134,4 @@ def manage_featured_games(request):
 
 # only deals with successful callback
 #def callback(request):
-#    if 
+#    if

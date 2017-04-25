@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'crispy_forms',
-	#'social_django',
+	'social_django',
     'fume.apps.FumeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
