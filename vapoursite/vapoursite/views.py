@@ -12,7 +12,7 @@ from django.db.models import Sum, Q
 from django.utils import timezone
 from django.forms import modelformset_factory, TextInput, CheckboxInput
 
-from fume.models import Member, Game, Reward, Transaction, Tag, MemberTag, Platform
+from fume.models import Member, Game, Reward, Transaction, Tag, Platform
 from fume.forms import AddToCartForm, NewTagForm
 
 
@@ -38,55 +38,34 @@ def game_view(request, game_id):
     member_tags = []
     if member.is_authenticated:
         purchased = Transaction.objects.filter(member=member).filter(game=game).filter(is_purchased=True)
-        member_tags = MemberTag.objects.filter(member=member).filter(game=game)
+        member_tags = Tag.objects.filter(member=member).filter(game=game)
 
     platform_used = Transaction.objects.filter(member=member).filter(game=game).values_list('platform', flat=True)
     platform_used = Platform.objects.filter(id__in=platform_used)
     cartform = AddToCartForm(request.POST or None)
     if cartform.is_valid():
-        x = cartform.cleaned_data.get('platform')
-        if not(x in platform_used) and x in game.platforms.all():
+        platform_choice = cartform.cleaned_data.get('platform')
+        if not(platform_choice in platform_used) and platform_choice in game.platforms.all():
             cart_entry = cartform.save(commit=False)
             cart_entry.member = member
             cart_entry.game = game
-            cart_entry.platform = x
+            cart_entry.platform = platform_choice
             cart_entry.price = game.price
             cart_entry.rewards_used = 0
             cart_entry.save()
             return HttpResponseRedirect('/game/'+game_id+'/')
 
-    member_game_tags = member_tags.values_list('tag__name', flat=True)
-    all_tags = Tag.objects.all().values_list('name', flat=True)
-    game_tags = game.tag_set.all().values_list('name', flat=True)
     newtagform = NewTagForm(request.POST or None)
     if newtagform.is_valid():
-        x = newtagform.cleaned_data.get('name')
-        if x in member_game_tags:
+        new_name = newtagform.cleaned_data.get('name')
+        if new_name in member_tags.values_list('name', flat=True):
             pass #add some error message
-        elif x in game_tags:
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = Tag.objects.get(name=x)
-            new_memtag.save()
-        elif x in all_tags:
-            old_tag = Tag.objects.get(name=x)
-            old_tag.games.add(game)
-            old_tag.save()
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = old_tag
-            new_memtag.save()
         else:
-            new_tag = newtagform.save()
-            new_tag.name = x
-            new_tag.games.add(game)
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = new_tag
-            new_memtag.save()
+            new_tag = Tag()
+            new_tag.name = new_name
+            new_tag.member = member
+            new_tag.game = game
+            new_tag.save()
         return HttpResponseRedirect('/game/'+game_id+'/')
 
     template = loader.get_template('vapoursite/game.html')
@@ -102,15 +81,8 @@ def game_view(request, game_id):
     return HttpResponse(template.render(context, request))
 
 
-def delete_tag(request, game_id, member_tag_id):
-    t1 = MemberTag.objects.get(id=member_tag_id)
-    t2 = t1.tag
-    g = t1.game
-    t1.delete()
-    if not t2.membertag_set.filter(game=g):
-        t2.games.remove(g)
-    if t2.membertag_set.count() == 0:
-        t2.delete()
+def delete_tag(request, game_id, tag_id):
+    Tag.objects.get(id=tag_id).delete()
     return HttpResponseRedirect('/game/'+game_id+'/')
 
 

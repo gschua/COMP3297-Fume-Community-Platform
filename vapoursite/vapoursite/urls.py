@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
 
     url(r'^game/(?P<game_id>\d+)/', game_view, name='game'),
-    url(r'^game/delete-tag/(?P<game_id>\d+)/(?P<member_tag_id>\d+)/', delete_tag, name='deleteTag'),
+    url(r'^game/delete-tag/(?P<game_id>\d+)/(?P<tag_id>\d+)/', delete_tag, name='deleteTag'),
 	#url(r'^game/addgame/(?P<game_id>\d+)/(?P<member_id>\d+)/', addtocart_view, name='addtocart'),
 
     url(r'^cart/(?P<member_id>\d+)/', cart_view, name='cart'),

@@ -51,7 +51,6 @@ def find_recommended_games(instance):
 
     recommended = []
     all_transactions = Transaction.objects.filter(member=instance).filter(is_purchased=True).order_by('-purchase_datetime')
-
     all_purchased = all_transactions.values_list('game', flat=True)
     unbought = Game.objects.exclude(id__in=all_purchased)   # all games not yet purchased by this member
 
@@ -65,33 +64,51 @@ def find_recommended_games(instance):
             gameIDhold.add(t.game.id)
     latest_transactions = temp[:3]
 
+    # Find a recommended game for each game in latest_transactions
     for purchase in latest_transactions:
         if not unbought:    # no possible games to recommend
             break
-        purchase_tags = purchase.game.tag_set.all()
+        purchase_tags = Tag.objects.filter(game=purchase.game).values_list('name', flat=True).distinct()    # list of all distinct tags for purchase
         current_count = 0
-        closest = Game.objects.get(id=1)  # need some default
+        closest_game = Game.objects.get(id=1)  # need some default
         for this_game in unbought:
-            game_tags = this_game.tag_set.all()
+            this_game_tags = Tag.objects.filter(game=this_game).values_list('name', flat=True).distinct()    # list of all distinct tags for purchase
             count = 0
             for tag in purchase_tags:
-                if tag in game_tags:
-                    count+=1
+                if tag in this_game_tags:
+                    count += 1
             if count >= current_count:
-                closest = this_game
+                closest_game = this_game
                 current_count = count
-        recommended.append(closest)
-        unbought = unbought.exclude(id=closest.id)  # if game is chosen for recommendation, remove to avoid getting chosen again
+        recommended.append(closest_game)
+        unbought = unbought.exclude(id=closest_game.id) # if game is chosen for recommendation, remove to avoid getting chosen again
+
     return recommended
 
 
 # finds 3 tags with highest occurrence for the game
-# not done
 def find_popular_tags(instance):
-    popular = []
-    game_tags = instance.tag_set.all()[:3]
-    member_tags = MemberTag.objects.filter(game=instance).filter(tag__in=game_tags)
-    return game_tags
+
+    game_tags = instance.tag_set.all()
+    game_tags_distinct = game_tags.values_list('name', flat=True).distinct()
+    popular = [ None, None, None ]
+    count = [ 0, 0, 0 ]
+
+    for t in game_tags_distinct:
+        tag_count = game_tags.filter(name=t).count();
+        if tag_count > count[2]:
+            if tag_count > count[1]:
+                if tag_count > count[0]:
+                    popular[0] = t
+                    count[0] = tag_count
+                else:
+                    popular[1] = t
+                    count[1] = tag_count
+            else:
+                popular[2] = t
+                count[2] = tag_count
+
+    return popular
 
 
 class Publisher(models.Model):
@@ -184,14 +201,6 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
     name = models.CharField(max_length=254)
-    #count = models.IntegerField(default=1)
-    games = models.ManyToManyField(Game)
-
-
-class MemberTag(models.Model):
-    def __str__(self):
-        return str(self.tag.name)
-    tag = models.ForeignKey(Tag, null=True)
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
 

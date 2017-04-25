@@ -93,26 +93,24 @@
                             {% endfor %}
                         </p>
                         <p><b>Popular Tags</b>: </p>
-                        {% if not game.get_popular_tags %}
-                            <p>None</p>
+                        <table id="tag"><tr>
+                            {% for i in game.get_popular_tags %}
+                                {% if i %}
+                                <td id="tag"><a id="tag" href="#">{{ i }}</a></td>
+                                {% endif %}
+                            {% endfor %}
+                            <td><a href="#"> See more</a></td>
+                        </tr></table>
+                        <p><b>Your Tags</b>: </p>
+                        {% if not purchased %}
+                            <p>Buy the game to add tags!</p>
                         {% else %}
                             <table id="tag"><tr>
-                                {% for i in game.get_popular_tags.all %}
-                                    <td id="tag"><a id="tag" href="#">{{ i.name }}</a></td>
+                                {% for i in member_tags %}
+                                    <td id="tag"><a id="{{ i.id }}" data-toggle="modal" data-target="#del-{{ i.id }}">{{ i.name }}</a></td>
                                 {% endfor %}
-                                <td><a href="#"> See more</a></td>
-                            </tr></table>
-                        {% endif %}
-                        <p><b>Your Tags</b>: </p>
-                        {% if purchased %}
-                        <table id="tag"><tr>
-                            {% for i in member_tags %}
-                                <td id="tag"><a id="{{ i.id }}" data-toggle="modal" data-target="#del-{{ i.id }}">{{ i.tag.name }}</a></td>
-                            {% endfor %}
                                 <td><a data-toggle="modal" data-target="#add-tag-modal"> Add Tag</a></td>
-                        </tr></table>
-                        {% else %}
-                            <p>Buy the game to add tags!</p>
+                            </tr></table>
                         {% endif %}
                     </div><!-- / misc game info -->
                     <div class="col-md-6">
