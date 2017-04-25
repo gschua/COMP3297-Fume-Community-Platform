@@ -24,24 +24,25 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+
     url(r'^admin/', admin.site.urls),
     url(r'^$', main_view, name='main'),
+    url(r'^register/', register_view, name='register'),
     url(r'^login/$', login_view, name='login'),
     url(r'^accounts/login/$', login_view, name='login'),
     url(r'^logout/', logout_view, name='logout'),
     
     url(r'^accounts/change_email/$', change_email_view, name='change_email'),
-
     url(r'^password_reset/$', auth_views.password_reset, name='password_reset'),
     url(r'^password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         auth_views.password_reset_confirm, name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
 
-    url(r'^register/', register_view, name='register'),
     url(r'^game/(?P<game_id>\d+)/', game_view, name='game'),
     url(r'^game/delete-tag/(?P<game_id>\d+)/(?P<member_tag_id>\d+)/', delete_tag, name='deleteTag'),
 	#url(r'^game/addgame/(?P<game_id>\d+)/(?P<member_id>\d+)/', addtocart_view, name='addtocart'),
+
     url(r'^cart/(?P<member_id>\d+)/', cart_view, name='cart'),
     url(r'^cart/delete/(?P<transaction_id>\d+)', delete_from_cart, name='delFromCart'),
     url(r'^cart/empty/', empty_cart, name='emptyCart'),
@@ -49,9 +50,7 @@ urlpatterns = [
 
     url(r'^manage/featured_games/$', manage_featured_games, name='manageFeaturedGames'),
     url('', include('social.apps.django_app.urls', namespace='social')),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# For some reason, delete_from_cart, empty_cart, checkout all completely
-# break if you change url(r'^cart/(?P<member_id>\d+)/',...)
-# to url(r'^cart/',...), so even though its technically not needed
-# just pass the member ID anyway
+# For some reason, delete_from_cart, empty_cart, checkout all completely break if you change url(r'^cart/(?P<member_id>\d+)/',...) to url(r'^cart/',...), so even though its technically not needed just pass the member ID anyway

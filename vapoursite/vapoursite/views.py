@@ -15,6 +15,7 @@ from django.forms import modelformset_factory, TextInput, CheckboxInput
 from fume.models import Member, Game, Reward, Transaction, Tag, MemberTag, Platform
 from fume.forms import AddToCartForm, NewTagForm
 
+
 def main_view(request):
     user = request.user
     user_rewards = []

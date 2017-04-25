@@ -3,118 +3,34 @@
 
 <html lang="en">
 
-     <!-- Removed some bug workaround for IE10. Just don't view this in IE. -->
-     <!-- Many components do not work in Firefox. -->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
 
-     <head>
-          <meta charset="utf-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-          <meta name="description" content="">
-          <meta name="author" content="">
-          <!-- Find some icon to put here later
-          <link rel="icon" href="../../favicon.ico">
-          -->
-
-          <title>Shopping Cart</title>
+        <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
+        <title>Shopping Cart</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
-
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
         <!-- jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-          <!-- CSS -->
+        <!-- Custom styles -->
         <link href="{% static '/style/main.css' %}" rel="stylesheet">
         <link href="{% static '/style/game.css' %}" rel="stylesheet">
+    </head>
 
-     </head>
+    <body>
 
-     <body>
+        {% include 'vapoursite/header.html' %}
 
-        <!-- Navigation
-        ================================================== -->
-        <nav class="navbar navbar-inverse">
-            <div class="container">
-                <div class="navbar-header vcenter">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <div class="row vcenter">
-                        <div class="col-md-2">
-                            <a href="/">
-                                <img alt="Fume Community Platform" src="{% static '/sample/logo.png' %}" width="50%" position="relative">
-                            </a>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="input-group">
-                                <span class="dropdown-search input-group-btn">
-                                    <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Search Type<span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href="#">Title</a></li>
-                                        <li><a href="#">Pulisher</a></li>
-                                        <li><a href="#">Tag</a></li>
-                                    </ul>
-                                </span>
-                                <input type="text" class="search-query form-control" placeholder="Search" />
-                                <span class="input-group-btn">
-                                    <button id="search-button" class="btn btn-danger" type="button">
-                                        <span class="glyphicon glyphicon-search"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        {% if not user.is_authenticated %}
-                        <div class="col-md-5">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                                <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                                <li><a href="{% url 'social:begin' 'github' %}?next={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span> Login with GitHub</a></li>
-                            </ul>
-                        </div>
-                        {% else %}
-                        <div class="col-md-1"></div>
-                        <div class="col-md-2">
-                            <div class="dropdown user-options">
-                                <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    {{ user.username }}
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% if user.is_staff %}
-                                    <li><a href="/manage/featured_games/">Manage Featured Games</a></li>
-                                    {% endif %}
-                                    <li><a href="/accounts/change_email/">Email Settings</a></li>
-                                    <li><a href="#">My Games</a></li>
-                                    <li><a href="#">My Cart</a></li>
-                                    <li><a href="/logout/">Log Out</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-2 avatar">
-                            {% if user.avatar != '' %}
-                            <img alt="User" src="{{ user.avatar }}">
-                            {% else %}
-                            <img alt="User" src="{% static '/sample/avatar.jpg' %}">
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div><!--/.row -->
-                </div><!--/.navbar-header -->
-            </div>
-        </nav>
 
         {% if not user.is_authenticated %}
 
@@ -125,134 +41,133 @@
         <div class="container game-short">
 
             <div class="row vcenter">
-                    <div class="col-md-3">
-                         <h1>Shopping Cart:</h1>
-                    </div>
-                    <div class="col-md-5">
-                         <p align="right">
-                              <b>Rewards received from this purchase</b>: {{ reward_rcv }}<br>
-                              <b>Spending needed for next Reward</b>: $ {{ user.get_needed_spending }}
-                         </p>
-                    </div>
-                    <div class="col-md-3">
-                         <p align="right">
-                              <font size="5"><b>Rewards Left: </b>{{ user.get_reward_count }}</font>
-                         </p>
-                    </div>
-                    <div class="col-md-1">
-                    </div>
-               </div>
-               <hr>
-               <div class="row vcenter">
-                    <div class="col-md-4">
-                         <h3>Title</h3>
-                    </div>
-                    <div class="col-md-1">
-                         <h3>Platform</h3>
-                    </div>
-                    <div class="col-md-2">
-                         <h3 align="right">Original</h3>
-                    </div>
-                    <div class="col-md-1">
-                         <h3>Rewards</h3>
-                    </div>
-                    <div class="col-md-2">
-                         <h3 align="right">Price</h3>
-                    </div>
-                    <div class="col-md-3"></div>
-                </div>
-                <hr>
-
-            {% if cart %}
-                {% for entry in cart %}
-                   <div class="row vcenter">
-                        <div class="col-md-4">
-                             <a href="/game/{{ entry.game.id }}/">
-                                  <p>{{ entry.game.title }}</p>
-                             </a>
-                        </div>
-                        <div class="col-md-1">
-                             <p>{{ entry.platform }}</p>
-                        </div>
-                        <div class="col-md-2">
-                             <p align="right">${{ entry.price }}</p>
-                        </div>
-                        <div class="col-md-1">
-                             <p align="right">{{ entry.rewards_used }}</p>
-                        </div>
-                        <div class="col-md-2">
-                             <p align="right">${{ entry.get_discount_price }}</p>
-                        </div>
-                        <div class="col-md-1">
-                            <form method='post' action=''>{% csrf_token %}
-                                <div class="user-options">
-                                    <button class="btn" type="submit" value="{{ entry.id }}" name="addReward">Add</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-md-1">
-                            <form method='post' action=''>{% csrf_token %}
-                                <div class="user-options">
-                                    <button class="btn" type="submit" value="{{ entry.id }}" name="removeReward">Remove</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-md-1">
-                        <a href="/cart/delete/{{ entry.id }}/">
-                            <span class="glyphicon glyphicon-remove"/>
-                        </a>
-                        </div>
-                   </div>
-                   <hr>
-                {% endfor %}
-
-            <div class="row vcenter">
-                <div class="col-md-5"></div>
-                <div class="col-md-2">
-                    <h4 align="center"><b>$ {{ pretotal }}</b></h4>
-                </div>
-                <div class="col-md-1">
-                    <h4 align="left"><b>{{ reward_tot }}</b></h4>
-                </div>
-                <div class="col-md-2">
-                    <h2 align="left"><b>$ {{ postotal }}</b></h2>
-                </div>
-                <div class="col-md-2"></div>
-            </div>
-
-            <div class="row vcenter">
-                <div class="col-md-1">
-                    <div class="user-options">
-                        <form method="post" action="/cart/empty/">{% csrf_token %}
-                            <button class="btn btn-lg" type="submit">Empty Cart</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-7"></div>
                 <div class="col-md-3">
-                    <div class="user-options">
-                        <form method="post" action="/cart/checkout/">{% csrf_token %}
-                            <button class="btn btn-lg" type="submit">Checkout</button>
-                        </form>
-                    </div>
+                    <h1>Shopping Cart:</h1>
+                </div>
+                <div class="col-md-5">
+                    <p align="right">
+                        <b>Rewards received from this purchase</b>: {{ reward_rcv }}<br>
+                        <b>Spending needed for next Reward</b>: $ {{ user.get_needed_spending }}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p align="right">
+                        <font size="5"><b>Rewards Left: </b>{{ user.get_reward_count }}</font>
+                    </p>
                 </div>
                 <div class="col-md-1"></div>
-               </div>
+            </div><hr><!-- /Title and Information about rewards -->
 
-            {% else %}
+            <div class="row vcenter">
+                <div class="col-md-4">
+                    <h3>Title</h3>
+                </div>
+                <div class="col-md-1">
+                    <h3>Platform</h3>
+                </div>
+                <div class="col-md-2">
+                    <h3 align="right">Original</h3>
+                </div>
+                <div class="col-md-1">
+                    <h3>Rewards</h3>
+                </div>
+                <div class="col-md-2">
+                    <h3 align="right">Price</h3>
+                </div>
+                <div class="col-md-3"></div>
+            </div><hr><!-- /Shopping cart information headers -->
+
+            {% if not cart %}
+
                 <div class="row vcenter">
                     <div class="col-md-12">
                         <h1>Your cart is empty. Please choose some games to add to your cart.</h1>
-                     </div>
+                    </div>
                 </div>
-            {% endif %}
+
+            {% else %}
+
+                {% for entry in cart %}
+                <div class="row vcenter">
+                    <div class="col-md-4">
+                        <a href="/game/{{ entry.game.id }}/">
+                            <p>{{ entry.game.title }}</p>
+                        </a>
+                    </div>
+                    <div class="col-md-1">
+                        <p>{{ entry.platform }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <p align="right">${{ entry.price }}</p>
+                    </div>
+                    <div class="col-md-1">
+                        <p align="right">{{ entry.rewards_used }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <p align="right">${{ entry.get_discount_price }}</p>
+                    </div>
+                    <div class="col-md-1">
+                        <form method='post' action=''>{% csrf_token %}
+                            <div class="user-options">
+                                <button class="btn" type="submit" value="{{ entry.id }}" name="addReward">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-1">
+                        <form method='post' action=''>{% csrf_token %}
+                            <div class="user-options">
+                                <button class="btn" type="submit" value="{{ entry.id }}" name="removeReward">Remove</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-1">
+                        <a href="/cart/delete/{{ entry.id }}/">
+                            <span class="glyphicon glyphicon-remove"/>
+                        </a>
+                    </div>
+                </div><hr><!-- /Game entry in cart -->
+                {% endfor %}
+
+                <div class="row vcenter">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">
+                        <h4 align="center"><b>$ {{ pretotal }}</b></h4>
+                    </div>
+                    <div class="col-md-1">
+                        <h4 align="left"><b>{{ reward_tot }}</b></h4>
+                    </div>
+                    <div class="col-md-2">
+                        <h2 align="left"><b>$ {{ postotal }}</b></h2>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div><!-- /Subtotals -->
+
+                <div class="row vcenter">
+                    <div class="col-md-1">
+                        <div class="user-options">
+                            <form method="post" action="/cart/empty/">{% csrf_token %}
+                                <button class="btn btn-lg" type="submit">Empty Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7"></div>
+                    <div class="col-md-3">
+                        <div class="user-options">
+                            <form method="post" action="/cart/checkout/">{% csrf_token %}
+                                <button class="btn btn-lg" type="submit">Checkout</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div><!-- /Checkout and Empty Cart buttons -->
+
+            {% endif %}<!-- /If cart has contents -->
 
             </div>
-        {% endif %}
 
-        <footer>
-            <p>&copy; 2017 Deatech, Inc.</p>
-        </footer>
+        {% endif %}<!-- /If user is logged in -->
+
+        {% include 'vapoursite/footer.html' %}
 
     </body>
 </html>
