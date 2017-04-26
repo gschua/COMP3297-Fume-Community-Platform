@@ -151,7 +151,7 @@
                                 <p>{{ entry.description_short }}</p>
                                 <p><b>Platform</b>:
                                     {% for i in entry.platforms.all %}
-                                    {{ i.text }}, 
+                                    {{ i.text }},
                                     {% endfor %}
                                 </p>
                                 <p><b>Genre</b>: {{ entry.genre }}</p>
@@ -188,8 +188,8 @@
                                 </div>
                                 <p>{{ entry.description_short }}</p>
                                 <p><b>Platform</b>:
-                                    {% for i in entry.platform.all %}
-                                    {{ i.text }}, 
+                                    {% for i in entry.platforms.all %}
+                                    {{ i.text }},
                                     {% endfor %}
                                 </p>
                                 <p><b>Genre</b>: {{ entry.genre }}</p>
