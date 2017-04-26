@@ -3,114 +3,32 @@
 
 <html lang="en">
 
-    <!-- Removed some bug workaround for IE10. Just don't view this in IE. -->
-    <!-- Many components do not work in Firefox. -->
-
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
         <meta name="description" content="">
         <meta name="author" content="">
-        <!-- Find some icon to put here later
-        <link rel="icon" href="../../favicon.ico">
-        -->
 
+        <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
         <title>Main</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
-
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
         <!-- jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-        <!-- Custom styles for this template, renamed because -->
+        <!-- Custom styles -->
         <link href="{% static '/style/main.css' %}" rel="stylesheet">
-
     </head>
 
     <body>
 
-        <!-- Navigation
-        ================================================== -->
-        <nav class="navbar navbar-inverse">
-            <div class="container">
-                <div class="navbar-header vcenter">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <div class="row vcenter">
-                        <div class="col-md-2">
-                            <a href="/">
-                                <img alt="Fume Community Platform" src="{% static '/sample/logo.png' %}" width="50%" position="relative">
-                            </a>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="input-group">
-                                <span class="dropdown-search input-group-btn">
-                                    <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Search Type<span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href="#">Title</a></li>
-                                        <li><a href="#">Pulisher</a></li>
-                                        <li><a href="#">Tag</a></li>
-                                    </ul>
-                                </span>
-                                <input type="text" class="search-query form-control" placeholder="Search" />
-                                <span class="input-group-btn">
-                                    <button id="search-button" class="btn btn-danger" type="button">
-                                        <span class="glyphicon glyphicon-search"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        {% if not user.is_authenticated %}
-                        <div class="col-md-5">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                                <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                                <li><a href="{% url 'social:begin' 'github' %}?next={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span> Login with GitHub</a></li>
-                            </ul>
-                        </div>
-                        {% else %}
-                        <div class="col-md-1"></div>
-                        <div class="col-md-2">
-                            <div class="dropdown user-options">
-                                <button class="btn dropdown-toggle btn-lg" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    {{ user.username }}
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Account Settings</a></li>
-                                    <li><a href="#">My Games</a></li>
-                                    <li><a href="/cart/{{ user.id }}/">My Cart</a></li>
-                                    <li><a href="/logout/">Log Out</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-2 avatar">
-                            {% if user.avatar != '' %}
-                            <img alt="User" src="{{ user.avatar }}">
-                            {% else %}
-                            <img alt="User" src="{% static '/sample/avatar.jpg' %}">
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div><!--/.row -->
-                </div><!--/.navbar-header -->
-            </div>
-        </nav>
+        {% include 'vapoursite/header.html' %}
 
         <!-- Navigation
         ================================================== -->
@@ -129,11 +47,11 @@
                     <li><a href="#">Strategy</a></li>
                 </ul>
             </nav>
-        </div>
+        </div><!-- /Quick navbar genre -->
+
 
         <!-- Rewards Alert
         ================================================== -->
-        <!-- See if possible to add image -->
         {% if user.is_authenticated %}
         <div class="alert alert-warning alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -164,12 +82,12 @@
                 {% endif %}
             </table>
         </div>
-        {% endif %}
+        {% endif %}<!-- /Rewards -->
+
 
         <!-- Carousel: Will Show Featured Games
         ================================================== -->
         <div id="myCarousel" class="carousel slide" data-ride="carousel">
-            <!-- Indicators -->
             <ol class="carousel-indicators">
                 <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
                 <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -200,10 +118,14 @@
                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                 <span class="sr-only">Next</span>
             </a>
-        </div><!-- /.carousel -->
+        </div><!-- /Carousel -->
 
+
+        <!-- Featured and Recommended Games: Quick Entries
+        ================================================== -->
         <div class="container">
             <div class="row">
+                <!-- Featured Games -->
                 <div class="col-md-5">
                     <h1>Featured:</h1>
                     <hr>
@@ -234,12 +156,14 @@
                                 </p>
                                 <p><b>Genre</b>: {{ entry.genre }}</p>
                             </div>
-                        </div>
-                        <hr>
+                        </div><hr>
                     {% endfor %}
                     {% endif %}
-                </div>
+                </div><!-- /Featured Games -->
+
                 <div class="col-md-1"></div>
+
+                <!-- Recommended Games -->
                 <div class="col-md-5">
                     <h1>Recommended for you:</h1>
                     <hr>
@@ -274,13 +198,11 @@
                         <hr>
                     {% endfor %}
                     {% endif %}
-                </div>
+                </div><!-- /Recommended Games -->
             </div>
-        </div> <!-- /container -->
+        </div> <!-- /Featured and Recommended -->
 
-        <footer>
-            <p>&copy; 2017 Deatech, Inc.</p>
-        </footer>
+        {% include 'vapoursite/footer.html' %}
 
-     </body>
+    </body>
 </html>

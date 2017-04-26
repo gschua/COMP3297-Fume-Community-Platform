@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import (
     authenticate,
     get_user_model,
@@ -6,10 +6,8 @@ from django.contrib.auth import (
     logout,
     )
 from django.utils import timezone
-from .forms import UserLoginForm, UserRegisterForm
-from fume.models import Reward
+from .forms import UserLoginForm, UserRegisterForm, UserChangeEmailForm
 
-# Create your views here.
 
 def login_view(request):
     next = request.GET.get('next')
@@ -39,12 +37,8 @@ def register_view(request):
         user = form.save(commit=False)
         password = form.cleaned_data.get('password')
         user.set_password(password)
+        user.acc_spending = 5.0
         user.save()
-
-        for i in range(0, 5):
-            new_reward = Reward()
-            new_reward.member = user
-            new_reward.save()
 
         new_user = authenticate(username=user.username, password=password)
         login(request, new_user)
@@ -64,3 +58,20 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def change_email_view(request):
+    next = request.GET.get('next')
+    title = "Change email"
+    form = UserChangeEmailForm(request.POST or None)
+    user=request.user
+
+    if request.method =='POST':
+        if form.is_valid():
+            email=form.cleaned_data.get("new_email")
+            user.email=email
+            user.save()
+            if next:
+                return redirect(next)
+            return redirect("/")
+    else:
+        return render(request, "vapoursite/form.html", {"form":form, "title": title})   

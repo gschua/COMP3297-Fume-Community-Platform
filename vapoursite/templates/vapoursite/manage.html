@@ -12,7 +12,7 @@
         <meta name="author" content="">
 
         <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
-        <title>{{ title }}</title>
+        <title>Management</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
@@ -31,29 +31,20 @@
 
         {% include 'vapoursite/header.html' %}
 
-        {% if user.is_authenticated or title == 'Register' or title == 'Login' %}
-
-            {% load crispy_forms_tags %}
-
-            {% block content %}
-            <div class="container">
-                <h1 class="form-signin-heading">{{ title }}</h1>
-                <hr>
-                <form class="form-signin" method="post" action=""> {% csrf_token %}
-                    {{ form|crispy }}
-                    <input type="submit" class="btn" value='{{ title }}' />
-                </form>
-                {% if title == 'Login' %}
-                    <a href="/password_reset/"><p>Forgot your password?</p></a>
-                {% endif %}
-            </div>
-            {% endblock content %}
-
+        <div class="container">
+        {% if user.is_staff %}
+            <h1 class="form-signin-heading">{{ type }}</h1>
+            <hr>
+            <form class="form-signin" method="post" action=""> {% csrf_token %}
+                <table>
+                    {{ form }}
+                </table>
+                <input type="submit" class="btn" value='Save' />
+            </form>
         {% else %}
-
-            <div class="container">You are not logged in.</div>
-
+            <div class="container"><h1>You are unauthorized to visit this page.</h1></div>
         {% endif %}
+        </div> <!-- /container -->
 
         {% include 'vapoursite/footer.html' %}
 
