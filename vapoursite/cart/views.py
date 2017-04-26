@@ -18,7 +18,7 @@ def cart_view(request, member_id):
     if request.POST.get('addReward'):
         entry = request.POST.get('addReward')
         entry = Transaction.objects.get(id=entry)
-        if (user.get_reward_count() > 0 and entry.rewards_used < 10):
+        if (user.get_reward_count() > entry.rewards_used and entry.rewards_used < 10):
             entry.rewards_used += 1
             entry.save()
             reward = user.reward_set.filter(status='act').earliest('expiry_date')
