@@ -73,5 +73,5 @@ def change_email_view(request):
             if next:
                 return redirect(next)
             return redirect("/")
-    else:
-        return render(request, "vapoursite/form.html", {"form":form, "title": title})   
+
+    return render(request, "vapoursite/form.html", {"form":form, "title": title})   
