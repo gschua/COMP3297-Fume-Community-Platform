@@ -8,7 +8,7 @@ from django.contrib.auth import (
     logout,
     )
 from fume.models import Member, Reward, Transaction
-
+from django.utils import timezone
 
 def cart_view(request, member_id):
 
