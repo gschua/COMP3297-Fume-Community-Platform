@@ -38,7 +38,8 @@
         <div class="masthead">
             <nav>
                 <ul class="nav nav-justified">
-                    <li><a href="#">Featured</a></li>
+                    <li><a href="/#featured">Featured</a></li>
+                    <li><a href="/tag/">Browse by tag</a></li>
                     <li><a href="#">Action</a></li>
                     <li><a href="#">Adventure</a></li>
                     <li><a href="#">Racing</a></li>
@@ -96,10 +97,10 @@
                         <table id="tag"><tr>
                             {% for i in game.get_popular_tags %}
                                 {% if i %}
-                                <td id="tag"><a id="tag" href="#">{{ i }}</a></td>
+                                <td id="tag"><a id="tag" href="/tag/{{i}}/">{{ i }}</a></td>
                                 {% endif %}
                             {% endfor %}
-                            <td><a href="#"> See more</a></td>
+                            <td><a href="#">See more</a></td>
                         </tr></table>
                         <p><b>Your Tags</b>: </p>
                         {% if not purchased %}
@@ -278,9 +279,8 @@
                     <div class="modal-footer">
                         <div class="user-options">
                             <form method="post" action="/game/delete-tag/{{ game.id }}/{{ i.id }}/">{% csrf_token %}
-                                <button class="btn" type="submit">Yes</button>
+                                <button class="btn" type="submit">Yes</button><button class="btn" type="button" data-dismiss="modal">No</button>
                             </form>
-                            <button class="btn" type="button" data-dismiss="modal">No</button>
                         </div>
                     </div>
                 </div>

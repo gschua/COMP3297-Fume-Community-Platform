@@ -1,11 +1,16 @@
 # Changelog
 
+### 2017-04-27
+ - Integrated browse by tag function. One may either choose "Browse by Tag" in main or click on the tags at the detail pages
+ - Changed Reward ID shown in main to relative index. Members are not supposed to know the global ID of each reward.
+ - Every required function seems to work properly now
+
+
 ### 2017-04-25
  - Got a new logo!
  - General syntax clean up.
- - Update to Member model field to distinguish between regular and super users. Provided super users wuth elevated permissions.
  - Deprecated Admin model field.
- - Fully implemented system for choosing of featured games for super users (aka administrators). Creation of new template for this feature.
+ - Fully implemented system for choosing of featured games for staff (different from the superuser). Creation of new template for this feature.
  - Update layout of Signup and Login pages.
  - Fully implemented system to change email address.
  - Deprecated MemberTag model field. Tag is now the sole tag model. Updated all related functions, views, models, and templates to adapt to new feature.

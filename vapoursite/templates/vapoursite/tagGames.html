@@ -1,0 +1,91 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
+        <title>Browse by Tag</title>
+
+        <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
+        <!-- Requires internet access -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Custom styles -->
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
+        <link href="{% static '/style/game.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        {% include 'vapoursite/header.html' %}
+
+        <!-- Title and infos about purchases
+        ================================================== -->
+        <div class="container game-short">
+         {% if not games %}
+            <div class="row vcenter">
+                <div class="col-md-12">
+                    <h1>No game under this tag!</h1>
+                </div>
+            </div>
+        {% else %}
+            <div class="row vcenter">
+                <div class="col-md-5">
+                    <h1>View by tag: {{tag_name}}</h1>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5" align="right">
+                        Number of games found: {{ games.count }}
+                </div>
+
+                <div class="col-md-1"></div>
+            </div><hr><!-- Title  -->
+
+            <!-- Games with a tag
+            ================================================== -->
+                <div class="col-md-12">
+                {% for entry in games %}
+                        <div class="row vcenter">
+                            <div class="col-md-3">
+                                <a href="/game/{{ entry.id }}">
+                                    <img src="/{{ entry.small_image }}" width="150px">
+                                </a>
+                            </div>
+                            <div class="col-md-8">
+                                <a href="/game/{{ entry.id }}"><h3>{{ entry.title }}</h3></a>
+                                <p>{{ entry.description_short }}</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><b>Platform</b>: {% for platform in entry.platforms.all %}{{ platform.text }},{% endfor %}</p>
+                                        <p><b>Genre</b>: {{ entry.genre }}</p>
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-1" id="price">
+                                    <p align="center"><font size="3">${{ entry.price }}</font></p>
+                            </div>
+                        </div><hr>
+                {% endfor %}
+            {% endif %}
+                </div><!-- /Purchased Games -->
+
+        </div>
+
+        {% include 'vapoursite/footer.html' %}
+
+    </body>
+</html>

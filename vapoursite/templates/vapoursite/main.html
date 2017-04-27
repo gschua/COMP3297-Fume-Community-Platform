@@ -12,7 +12,7 @@
         <meta name="author" content="">
 
         <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
-        <title>Main</title>
+        <title>Fume Community Placform</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
@@ -37,7 +37,8 @@
         <div class="masthead">
             <nav>
                 <ul class="nav nav-justified">
-                    <li><a href="#">Featured</a></li>
+                    <li><a href="#featured">Featured</a></li>
+                    <li><a href="/tag/">Browse by tag</a></li>
                     <li><a href="#">Action</a></li>
                     <li><a href="#">Adventure</a></li>
                     <li><a href="#">Racing</a></li>
@@ -68,13 +69,13 @@
                 </tr>
                 {% if user.get_reward_count > 0 %}
                     <tr>
-                        <td id="reward"><b>ID</b></td>
+                        <td id="reward"><b>No.</b></td>
                         <td id="reward"><b>Awarded</b></td>
                         <td id="reward"><b>Expiry</b></td>
                     </tr>
                     {% for rew in user_rewards %}
                     <tr>
-                        <td id="reward">{{ rew.id }}</td>
+                        <td id="reward">{{ forloop.counter }}</td>
                         <td id="reward">{{ rew.award_date }}</td>
                         <td id="reward">{{ rew.expiry_date }}</td>
                     </tr>
@@ -125,9 +126,14 @@
         ================================================== -->
         <div class="container">
             <div class="row">
+                {% if user.is_authenticated %}
                 <!-- Featured Games -->
                 <div class="col-md-5">
-                    <h1>Featured:</h1>
+                {% else %}
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                {% endif %}
+                    <h1 id="featured">Featured:</h1>
                     <hr>
                     {% if not featured %}
                         <h3>None</h3>
@@ -160,7 +166,7 @@
                     {% endfor %}
                     {% endif %}
                 </div><!-- /Featured Games -->
-
+                {% if user.is_authenticated %}
                 <div class="col-md-1"></div>
 
                 <!-- Recommended Games -->
@@ -199,6 +205,7 @@
                     {% endfor %}
                     {% endif %}
                 </div><!-- /Recommended Games -->
+                {% endif %}
             </div>
         </div> <!-- /Featured and Recommended -->
 

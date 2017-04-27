@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from .views import (main_view, game_view, myGames_view)
+from .views import (main_view, game_view, myGames_view, view_tags, view_by_tag)
 from .views import (delete_tag, manage_featured_games)
 from accounts.views import (login_view, register_view, logout_view, change_email_view)
 from cart.views import (cart_view, delete_from_cart, empty_cart, checkout)
@@ -49,6 +49,9 @@ urlpatterns = [
     url(r'^cart/checkout/', checkout, name='checkout'),
 
     url(r'^myGames/(?P<member_id>\d+)/', myGames_view, name='myGames'),
+
+    url(r'^tag/$', view_tags, name='viewTags'),
+    url(r'^tag/(?P<tag_name>.+)/', view_by_tag, name='viewGamesByTag'),
 
     url(r'^manage/featured_games/$', manage_featured_games, name='manageFeaturedGames'),
     url('', include('social.apps.django_app.urls', namespace='social')),

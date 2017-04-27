@@ -125,6 +125,25 @@ def manage_featured_games(request):
 	else:
 		return render(request, 'vapoursite/manage.html', {'type': 'Featured games', 'form': form, 'user': request.user})
 
+def view_tags(request):
+    tags = Tag.objects.all().values_list('name').distinct()
+    names = []
+    count = []
+    for tag in tags:
+        names.append(tag[0])
+        count.append(Game.objects.filter(tag__name=tag[0]).count())
+    tags = sorted(zip(count, names), reverse=True)
+    return render(request, 'vapoursite/tag.html', { 'tags': tags })
+
+def view_by_tag(request, tag_name):
+    games=Game.objects.filter(tag__name=tag_name).order_by('-release_date')
+    context = {
+        'user': request.user,
+        'games': games,
+        'tag_name': tag_name,
+    }
+    return render(request, 'vapoursite/tagGames.html', context)
+
 
 #redirected to login page if not logged in user tries to access this view
 #@login_required(login_url='/login/')

@@ -203,11 +203,10 @@ class Transaction(models.Model):
 
 class Tag(models.Model):
     def __str__(self):
-        return self.name
+        return self.name + ' created by ' + str(self.member) + ' on ' + str(self.game)
     name = models.CharField(max_length=254)
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
-
 
 class Review(models.Model):
     def __str__(self):
