@@ -68,37 +68,56 @@ def find_recommended_games(instance):
     for purchase in latest_transactions:
         if not unbought:    # no possible games to recommend
             break
-        purchase_tags = purchase.game.tag_set.all()
+        purchase_tags = purchase.game.get_all_tags()    # list of all distinct tags for purchase
         current_count = 0
-        closest = Game.objects.get(id=1)  # need some default
+        closest_game = Game.objects.get(id=1)  # need some default
         for this_game in unbought:
-            game_tags = this_game.tag_set.all()
+            this_game_tags = this_game.get_all_tags()    # list of all distinct tags for purchase
             count = 0
+            print(this_game.title)
             for tag in purchase_tags:
-                if tag in game_tags:
-                    count+=1
+                for tag2 in this_game_tags:
+                    print (tag + " " + tag2)
+                    if tag==tag2:
+                        count+=1
+                        break
+            print(count)
             if count >= current_count:
-                closest = this_game
+                closest_game = this_game
                 current_count = count
-        recommended.append(closest)
-        unbought = unbought.exclude(id=closest.id)  # if game is chosen for recommendation, remove to avoid getting chosen again
+        recommended.append(closest_game)
+        unbought = unbought.exclude(id=closest_game.id) # if game is chosen for recommendation, remove to avoid getting chosen again
+
     return recommended
 
 
 # finds 3 tags with highest occurrence for the game
-# not done
 def find_popular_tags(instance):
-    popular = []
-    game_tags = instance.tag_set.all()[:3]
-    member_tags = MemberTag.objects.filter(game=instance).filter(tag__in=game_tags)
-    return game_tags
 
+    game_tags = instance.tag_set.all()
+    game_tags_distinct = game_tags.values_list('name', flat=True).distinct()
+    popular = [ None, None, None ]
+    count = [ 0, 0, 0 ]
 
-class Admin(models.Model):
-    def __str__(self):
-        return self.username
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=30)
+    for t in game_tags_distinct:
+        tag_count = game_tags.filter(name=t).count();
+        if tag_count > count[0]:
+            popular[2] = popular[1]
+            popular[1] = popular[0]
+            popular[0] = t
+            count[2] = count[1]
+            count[1] = count[0]
+            count[0] = tag_count
+        elif tag_count > count[1]:
+            popular[2] = popular[1]
+            popular[1] = t
+            count[2] = count[1]
+            count[1] = tag_count
+        elif tag_count > count[2]:
+            popular[2] = t
+            count[2] = tag_count
+
+    return popular
 
 
 class Publisher(models.Model):
@@ -136,6 +155,8 @@ class Game(models.Model):
     featured = models.BooleanField(default=False)
     def get_popular_tags(self):
         return find_popular_tags(self)
+    def get_all_tags(self):
+        return self.tag_set.all().values_list('name', flat=True).distinct()
 
 
 class Member(AbstractBaseUser, PermissionsMixin):
@@ -144,7 +165,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     objects=UserManager()
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=254)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     screen_name = models.CharField(max_length=30, default='Unnamed')
     avatar = models.ImageField(upload_to=avatar_handler, null=True, blank=True)
     acc_spending = models.FloatField(default=0.0)
@@ -165,6 +186,8 @@ class Member(AbstractBaseUser, PermissionsMixin):
         return self.username
     def get_reward_count(self):
         return self.reward_set.filter(Q(status='act')|Q(status='car')).count()
+    def get_available_reward_count(self):
+        return self.reward_set.filter(status='act').count()
     def get_next_reward_expiry(self):
         return self.reward_set.filter(Q(status='act')|Q(status='car')).earliest('expiry_date').expiry_date
     def get_recommended_games(self):
@@ -189,16 +212,8 @@ class Transaction(models.Model):
 
 class Tag(models.Model):
     def __str__(self):
-        return self.name
+        return self.name + ' created by ' + str(self.member) + ' on ' + str(self.game)
     name = models.CharField(max_length=254)
-    #count = models.IntegerField(default=1)
-    games = models.ManyToManyField(Game)
-
-
-class MemberTag(models.Model):
-    def __str__(self):
-        return str(self.tag.name)
-    tag = models.ForeignKey(Tag, null=True)
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
 

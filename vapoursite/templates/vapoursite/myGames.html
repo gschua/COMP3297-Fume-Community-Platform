@@ -1,0 +1,103 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
+        <title>My Games</title>
+
+        <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
+        <!-- Requires internet access -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Custom styles -->
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        {% include 'vapoursite/header.html' %}
+
+
+        <div class="container game-short">
+
+            <!-- Title and infos about purchases
+            ================================================== -->
+            <div class="row vcenter">
+                <div class="col-md-5">
+                    <h1>My Games:</h1>
+                </div>
+                <div class="col-md-3">
+                    <p align="right">
+                        <b>Total Rewards used</b>:<br>
+                        <b>Total Spending</b>:
+                    </p>
+                </div>
+                <div class="col-md-1">
+                    <p align="right">
+                        {{ rewards }}<br>
+                        $ {{ spending }}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p align="right">
+                        <font size="5"><b>Games purchased: </b>{{ games_tot }}</font>
+                    </p>
+                </div>
+            </div><hr><!-- Title  -->
+
+            {% if not myGames %}
+
+            <div><h1 align="center">You haven't purchased any games yet. Go purchase some games!</h1></div>
+
+            {% else %}
+
+            <!-- Purchased Games
+            ================================================== -->
+            {% for entry in myGames %}
+            <div class="row vcenter">
+                <div class="col-md-2">
+                    <a href="/game/{{ entry.game.id }}">
+                        <img src="/{{ entry.game.small_image }}" width="150px">
+                    </a>
+                </div>
+                <div class="col-md-10">
+                    <a href="/game/{{ entry.game.id }}"><h3>{{ entry.game.title }}</h3></a>
+                    <p>{{ entry.game.description_short }}</p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><b>Platform</b>: {{ entry.platform }}</p>
+                            <p><b>Genre</b>: {{ entry.game.genre }}</p>
+                            <p><b>Number of Rewards Used</b>: {{ entry.rewards_used }}</p>
+                        </div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-6">
+                            <p><b>Purchase date</b>: {{ entry.purchase_datetime }}</p>
+                            <p><b>Original price</b>: $ {{ entry.price }}</p>
+                            <p><b>Price paid</b>: $ {{ entry.get_discount_price }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div><hr>
+            {% endfor %}
+
+            {% endif %}
+
+        </div>
+
+        {% include 'vapoursite/footer.html' %}
+
+    </body>
+</html>

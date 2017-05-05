@@ -1,0 +1,52 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
+        <title>Management</title>
+
+        <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
+        <!-- Requires internet access -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Custom styles -->
+        <link href="{% static '/style/main.css' %}" rel="stylesheet">
+        <link href="{% static '/style/signuplogin.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        {% include 'vapoursite/header.html' %}
+
+        <div class="container">
+        {% if user.is_staff %}
+            <h1 class="form-signin-heading">{{ type }}</h1>
+            <hr>
+            <form class="form-signin" method="post" action=""> {% csrf_token %}
+                <table>
+                    {{ form }}
+                </table>
+                <input type="submit" class="btn" value='Save' />
+            </form>
+        {% else %}
+            <div class="container"><h1>You are unauthorized to visit this page.</h1></div>
+        {% endif %}
+        </div> <!-- /container -->
+
+        {% include 'vapoursite/footer.html' %}
+
+    </body>
+</html>

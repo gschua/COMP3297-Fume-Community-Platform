@@ -4,7 +4,6 @@ from django.contrib.auth import (
     get_user_model,
     login,
     logout,
-
     )
 
 User = get_user_model()
@@ -20,10 +19,7 @@ class UserLoginForm(forms.Form):
         user = authenticate(username=username, password=password)
 
         if not user:
-            raise forms.ValidationError("User does not exist")
-
-        if not user.check_password(password):
-            raise forms.ValidationError("Incorrect password")
+            raise forms.ValidationError("Incorrect login informatin")
 
         if not user.is_active:
             raise forms.ValidationError("This user is no longer active")
@@ -33,7 +29,7 @@ class UserLoginForm(forms.Form):
 class UserRegisterForm(forms.ModelForm):
     email = forms.EmailField(label='Email address')
     password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput, label='Comfirm password')
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm password')
 
     class Meta:
         model = User
@@ -61,3 +57,24 @@ class UserRegisterForm(forms.ModelForm):
             raise forms.ValidationError("Password inconsistent")
 
         return password
+
+class UserChangeEmailForm(forms.Form):
+    new_email = forms.EmailField(label='New email')
+    new_email2 = forms.EmailField(label='Comfirm new email')
+
+    def clean_new_email(self):
+        new_email = self.cleaned_data.get('new_email')
+
+        email_qs = User.objects.filter(email=new_email)
+        if email_qs.exists():
+            raise forms.ValidationError("This email has already been used")
+
+        return new_email
+    def clean_new_email2(self):
+        new_email = self.cleaned_data.get('new_email')
+        new_email2 = self.cleaned_data.get('new_email2')
+        
+        if new_email!=new_email2:
+            raise forms.ValidationError("Email inconsistent")
+
+        return new_email2

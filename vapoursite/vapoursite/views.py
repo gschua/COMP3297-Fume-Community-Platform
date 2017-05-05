@@ -10,8 +10,9 @@ from django.contrib.auth import (
     )
 from django.db.models import Sum, Q
 from django.utils import timezone
+from django.forms import modelformset_factory, TextInput, CheckboxInput
 
-from fume.models import Member, Game, Reward, Transaction, Tag, MemberTag, Platform
+from fume.models import Member, Game, Reward, Transaction, Tag, Platform
 from fume.forms import AddToCartForm, NewTagForm
 
 
@@ -23,69 +24,55 @@ def main_view(request):
     template = loader.get_template('vapoursite/main.html')
     context = {
         'user': user,
-        'featured': Game.objects.filter(featured=True),
+        'featured': Game.objects.filter(featured=True).order_by('release_date'),
         'user_rewards': user_rewards,
     }
     return HttpResponse(template.render(context, request))
 
 
+@login_required(login_url='/login/')
 def game_view(request, game_id):
 
     member = request.user
     game = Game.objects.get(id=game_id)
+    invalid_platform = False
+    used_platform = False
     purchased = []
     member_tags = []
     if member.is_authenticated:
         purchased = Transaction.objects.filter(member=member).filter(game=game).filter(is_purchased=True)
-        member_tags = MemberTag.objects.filter(member=member).filter(game=game)
+        member_tags = Tag.objects.filter(member=member).filter(game=game)
 
     platform_used = Transaction.objects.filter(member=member).filter(game=game).values_list('platform', flat=True)
     platform_used = Platform.objects.filter(id__in=platform_used)
     cartform = AddToCartForm(request.POST or None)
     if cartform.is_valid():
-        x = cartform.cleaned_data.get('platform')
-        if not(x in platform_used) and x in game.platforms.all():
+        platform_choice = cartform.cleaned_data.get('platform')
+        if not(platform_choice in game.platforms.all()):
+            invalid_platform = True
+        elif platform_choice in platform_used:
+            used_platform = True
+        else:
             cart_entry = cartform.save(commit=False)
             cart_entry.member = member
             cart_entry.game = game
-            cart_entry.platform = x
+            cart_entry.platform = platform_choice
             cart_entry.price = game.price
             cart_entry.rewards_used = 0
             cart_entry.save()
             return HttpResponseRedirect('/game/'+game_id+'/')
 
-    member_game_tags = member_tags.values_list('tag__name', flat=True)
-    all_tags = Tag.objects.all().values_list('name', flat=True)
-    game_tags = game.tag_set.all().values_list('name', flat=True)
     newtagform = NewTagForm(request.POST or None)
     if newtagform.is_valid():
-        x = newtagform.cleaned_data.get('name')
-        if x in member_game_tags:
+        new_name = newtagform.cleaned_data.get('name')
+        if new_name in member_tags.values_list('name', flat=True):
             pass #add some error message
-        elif x in game_tags:
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = Tag.objects.get(name=x)
-            new_memtag.save()
-        elif x in all_tags:
-            old_tag = Tag.objects.get(name=x)
-            old_tag.games.add(game)
-            old_tag.save()
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = old_tag
-            new_memtag.save()
         else:
-            new_tag = newtagform.save()
-            new_tag.name = x
-            new_tag.games.add(game)
-            new_memtag = MemberTag()
-            new_memtag.member = member
-            new_memtag.game = game
-            new_memtag.tag = new_tag
-            new_memtag.save()
+            new_tag = Tag()
+            new_tag.name = new_name
+            new_tag.member = member
+            new_tag.game = game
+            new_tag.save()
         return HttpResponseRedirect('/game/'+game_id+'/')
 
     template = loader.get_template('vapoursite/game.html')
@@ -96,117 +83,74 @@ def game_view(request, game_id):
         'purchased': purchased,
         'cartform': cartform,
         'newtagform': newtagform,
+        'invalid_platform': invalid_platform,
+        'used_platform': used_platform,
     }
 
     return HttpResponse(template.render(context, request))
 
 
-def cart_view(request, member_id):
-
+@login_required(login_url='/login/')
+def myGames_view(request, member_id):
     user = request.user
-    cart = Transaction.objects.filter(member=user).filter(is_purchased=False)
+    myGames= Transaction.objects.filter(member=user).filter(is_purchased=True).order_by('-purchase_datetime')
 
-    if request.POST.get('addReward'):
-        entry = request.POST.get('addReward')
-        entry = Transaction.objects.get(id=entry)
-        if (user.get_reward_count() > 0 and entry.rewards_used < 10):
-            entry.rewards_used += 1
-            entry.save()
-            reward = user.reward_set.filter(status='act').earliest('expiry_date')
-            reward.status = 'car'
-            reward.save()
+    myGames_count = 0
+    total_spending = 0.0
+    total_reward_used = 0
 
-    if request.POST.get('removeReward'):
-        entry = request.POST.get('removeReward')
-        entry = Transaction.objects.get(id=entry)
-        reward = user.reward_set.filter(status='car')
-        if (entry.rewards_used > 0 and reward):
-            entry.rewards_used -= 1
-            entry.save()
-            reward = reward.latest('expiry_date')
-            reward.status = 'act'
-            reward.save()
+    for entry in myGames:
+        myGames_count += 1
+        total_spending += entry.get_discount_price()
+        total_reward_used += entry.rewards_used
 
-    reward_threshold = 100.0
-    reward_total = 0
-    total_pre_reward = 0.0
-    total_post_reward = 0.0
-    for entry in cart:
-        reward_total += entry.rewards_used
-        total_pre_reward += entry.price
-        total_post_reward += entry.get_discount_price()
-    reward_received = int(total_post_reward / reward_threshold)
-
-    template = loader.get_template('vapoursite/cart.html')
+    template = loader.get_template('vapoursite/myGames.html')
     context = {
         'user': user,
-        'cart': cart,
-        'pretotal': total_pre_reward,
-        'postotal': total_post_reward,
-        'reward_tot': reward_total,
-        'reward_rcv': reward_received,
+        'myGames': myGames,
+        'spending': total_spending,
+        'rewards': total_reward_used,
+        'games_tot': myGames_count,
     }
 
     return HttpResponse(template.render(context, request))
 
-
-def delete_from_cart(request, transaction_id):
-    t = Transaction.objects.get(id=transaction_id)
-    rew = Reward.objects.filter(member=request.user).filter(status='car').order_by('-expiry_date')[:t.rewards_used]
-    for r in rew:
-        r.status = 'act'
-        r.save()
-    t.delete()
-    return HttpResponseRedirect('/cart/' + str(request.user.id) +'/')
-
-
-def empty_cart(request):
-    cart = Transaction.objects.filter(member=request.user).filter(is_purchased=False)
-    for transaction in cart:
-        t = Transaction.objects.get(id=transaction.id)
-        rew = Reward.objects.filter(member=request.user).filter(status='car').order_by('-expiry_date')[:t.rewards_used]
-        for r in rew:
-            r.status = 'act'
-            r.save()
-        t.delete()
-    return HttpResponseRedirect('/cart/' + str(request.user.id) +'/')
-
-
-def checkout(request):
-    member = request.user
-    cart = Transaction.objects.filter(member=member).filter(is_purchased=False)
-    spending = member.acc_spending
-    for t in cart:
-        rew = Reward.objects.filter(member=member).filter(status='car').order_by('expiry_date')[:t.rewards_used]
-        for r in rew:
-            r.status = 'use'
-            r.transaction = t
-            r.save()
-        t.is_purchased=True
-        t.purchase_datetime = timezone.now()
-        spending += t.get_discount_price()
-        t.save()
-    reward_threshold = 100.0
-    while spending >= reward_threshold:
-        spending -= reward_threshold
-        new_reward = Reward()
-        new_reward.member = member
-        new_reward.save()
-    member.acc_spending = spending
-    member.save()
-    return HttpResponseRedirect('/')
-
-
-def delete_tag(request, game_id, member_tag_id):
-    t1 = MemberTag.objects.get(id=member_tag_id)
-    t2 = t1.tag
-    g = t1.game
-    t1.delete()
-    if not t2.membertag_set.filter(game=g):
-        t2.games.remove(g)
-    if t2.membertag_set.count() == 0:
-        t2.delete()
+def delete_tag(request, game_id, tag_id):
+    Tag.objects.get(id=tag_id).delete()
     return HttpResponseRedirect('/game/'+game_id+'/')
+
+
+def manage_featured_games(request):
+
+	FeaturedGameFormSet = modelformset_factory(Game, fields=('title', 'featured'), widgets={'title': TextInput(attrs={'readonly': True}), 'featured': CheckboxInput(attrs={'required': False})}, extra=0)
+	form=FeaturedGameFormSet(queryset= Game.objects.all(), initial=Game.objects.values('title', 'featured'))
+	#formset=FeaturedGameFormSet(initial=[{'featured': game.featured, 'featured.label' : game.title} for game in games])
+	if request.method == 'POST':
+		form=FeaturedGameFormSet(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/')
+	else:
+		return render(request, 'vapoursite/manage.html', {'type': 'Featured games', 'form': form, 'user': request.user})
+
+def view_tags(request):
+    tags = Tag.objects.all().values_list('name').distinct()
+    names = []
+    count = []
+    for tag in tags:
+        names.append(tag[0])
+        count.append(Game.objects.filter(tag__name=tag[0]).count())
+    tags = sorted(zip(count, names), reverse=True)
+    return render(request, 'vapoursite/tag.html', { 'tags': tags })
+
+def view_by_tag(request, tag_name):
+    games=Game.objects.filter(tag__name=tag_name).order_by('-release_date')
+    context = {
+        'user': request.user,
+        'games': games,
+        'tag_name': tag_name,
+    }
+    return render(request, 'vapoursite/tagGames.html', context)
 
 
 #redirected to login page if not logged in user tries to access this view
@@ -217,4 +161,4 @@ def delete_tag(request, game_id, member_tag_id):
 
 # only deals with successful callback
 #def callback(request):
-#    if 
+#    if

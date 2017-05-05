@@ -1,6 +1,6 @@
 .game-summary {
     margin-top: 50px;
-    margin-bottom: 15px;
+    margin-bottom: 50px;
 }
 
 table#tag {
@@ -20,6 +20,11 @@ a#tag {
     text-decoration: none;
 }
 
+.white-link {
+    color: #ddd;
+    text-decoration: none;
+}
+
 .buying {
     padding-right: 20px;
     background-color: #eee;
@@ -29,19 +34,6 @@ a#tag {
     text-align: right;
     width: 100%;
     height: 70px;
-}
-
-.screenshots {
-    white-space: nowrap;
-}
-
-.screenshots > a > img {
-    height: 150px;
-    margin: 10px;
-}
-
-.review-sort {
-    text-align: right
 }
 
 .page-nav {
