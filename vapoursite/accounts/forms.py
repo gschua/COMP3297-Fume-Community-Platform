@@ -29,7 +29,7 @@ class UserLoginForm(forms.Form):
 class UserRegisterForm(forms.ModelForm):
     email = forms.EmailField(label='Email address')
     password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput, label='Comfirm password')
+    password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm password')
 
     class Meta:
         model = User

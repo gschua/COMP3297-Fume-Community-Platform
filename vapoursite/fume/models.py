@@ -51,6 +51,7 @@ def find_recommended_games(instance):
 
     recommended = []
     all_transactions = Transaction.objects.filter(member=instance).filter(is_purchased=True).order_by('-purchase_datetime')
+
     all_purchased = all_transactions.values_list('game', flat=True)
     unbought = Game.objects.exclude(id__in=all_purchased)   # all games not yet purchased by this member
 
@@ -64,19 +65,23 @@ def find_recommended_games(instance):
             gameIDhold.add(t.game.id)
     latest_transactions = temp[:3]
 
-    # Find a recommended game for each game in latest_transactions
     for purchase in latest_transactions:
         if not unbought:    # no possible games to recommend
             break
-        purchase_tags = Tag.objects.filter(game=purchase.game).values_list('name', flat=True).distinct()    # list of all distinct tags for purchase
+        purchase_tags = purchase.game.get_all_tags()    # list of all distinct tags for purchase
         current_count = 0
         closest_game = Game.objects.get(id=1)  # need some default
         for this_game in unbought:
-            this_game_tags = Tag.objects.filter(game=this_game).values_list('name', flat=True).distinct()    # list of all distinct tags for purchase
+            this_game_tags = this_game.get_all_tags()    # list of all distinct tags for purchase
             count = 0
+            print(this_game.title)
             for tag in purchase_tags:
-                if tag in this_game_tags:
-                    count += 1
+                for tag2 in this_game_tags:
+                    print (tag + " " + tag2)
+                    if tag==tag2:
+                        count+=1
+                        break
+            print(count)
             if count >= current_count:
                 closest_game = this_game
                 current_count = count
@@ -150,6 +155,8 @@ class Game(models.Model):
     featured = models.BooleanField(default=False)
     def get_popular_tags(self):
         return find_popular_tags(self)
+    def get_all_tags(self):
+        return self.tag_set.all().values_list('name', flat=True).distinct()
 
 
 class Member(AbstractBaseUser, PermissionsMixin):
@@ -158,7 +165,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     objects=UserManager()
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=254)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     screen_name = models.CharField(max_length=30, default='Unnamed')
     avatar = models.ImageField(upload_to=avatar_handler, null=True, blank=True)
     acc_spending = models.FloatField(default=0.0)
@@ -179,6 +186,8 @@ class Member(AbstractBaseUser, PermissionsMixin):
         return self.username
     def get_reward_count(self):
         return self.reward_set.filter(Q(status='act')|Q(status='car')).count()
+    def get_available_reward_count(self):
+        return self.reward_set.filter(status='act').count()
     def get_next_reward_expiry(self):
         return self.reward_set.filter(Q(status='act')|Q(status='car')).earliest('expiry_date').expiry_date
     def get_recommended_games(self):
@@ -207,6 +216,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=254)
     member = models.ForeignKey(Member, null=True)
     game = models.ForeignKey(Game, null=True)
+
 
 class Review(models.Model):
     def __str__(self):

@@ -35,6 +35,8 @@ def game_view(request, game_id):
 
     member = request.user
     game = Game.objects.get(id=game_id)
+    invalid_platform = False
+    used_platform = False
     purchased = []
     member_tags = []
     if member.is_authenticated:
@@ -46,7 +48,11 @@ def game_view(request, game_id):
     cartform = AddToCartForm(request.POST or None)
     if cartform.is_valid():
         platform_choice = cartform.cleaned_data.get('platform')
-        if not(platform_choice in platform_used) and platform_choice in game.platforms.all():
+        if not(platform_choice in game.platforms.all()):
+            invalid_platform = True
+        elif platform_choice in platform_used:
+            used_platform = True
+        else:
             cart_entry = cartform.save(commit=False)
             cart_entry.member = member
             cart_entry.game = game
@@ -77,6 +83,8 @@ def game_view(request, game_id):
         'purchased': purchased,
         'cartform': cartform,
         'newtagform': newtagform,
+        'invalid_platform': invalid_platform,
+        'used_platform': used_platform,
     }
 
     return HttpResponse(template.render(context, request))
@@ -121,7 +129,7 @@ def manage_featured_games(request):
 		form=FeaturedGameFormSet(request.POST, request.FILES)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('')
+			return HttpResponseRedirect('/')
 	else:
 		return render(request, 'vapoursite/manage.html', {'type': 'Featured games', 'form': form, 'user': request.user})
 

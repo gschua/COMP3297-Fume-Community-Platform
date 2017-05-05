@@ -15,6 +15,10 @@ body {
     align-items: center;
 }
 
+.masthead {
+    padding-bottom: 40px;
+}
+
 /* Header and Search Bar
 -------------------------------------------------- */
 
@@ -117,37 +121,8 @@ td#reward {
 }
 
 .alert {
-    margin-top: 50px;
     padding-left: 35%;
 }
-
-
-/* Featured Games Carousel
--------------------------------------------------- */
-
-/* Carousel base class */
-.carousel {
-    height: 400px; /* figure out how to make this relative */
-    width: 1200px;
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 30px;
-}
-
-/* Declare heights because of positioning of img element */
-.carousel .item {
-    height: 400px;
-    background-color: #777;
-}
-
-.carousel-inner > .item > a > img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 400px;
-    min-width: 100%;
-}
-
 
 /* Game Entries
 -------------------------------------------------- */

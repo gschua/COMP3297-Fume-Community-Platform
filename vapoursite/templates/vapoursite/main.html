@@ -12,7 +12,7 @@
         <meta name="author" content="">
 
         <link rel="icon" href="{% static '/sample/logo-icon.png' %}">
-        <title>Fume Community Placform</title>
+        <title>Fume Community Platform</title>
 
         <!-- Using Bootstrap CDN (Content Delivery Network) so no need to personally download and host Bootstrap -->
         <!-- Requires internet access -->
@@ -37,7 +37,6 @@
         <div class="masthead">
             <nav>
                 <ul class="nav nav-justified">
-                    <li><a href="#featured">Featured</a></li>
                     <li><a href="/tag/">Browse by tag</a></li>
                     <li><a href="#">Action</a></li>
                     <li><a href="#">Adventure</a></li>
@@ -84,42 +83,6 @@
             </table>
         </div>
         {% endif %}<!-- /Rewards -->
-
-
-        <!-- Carousel: Will Show Featured Games
-        ================================================== -->
-        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                <li data-target="#myCarousel" data-slide-to="1"></li>
-                <li data-target="#myCarousel" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner" role="listbox">
-                <div class="item active">
-                    <a href="/game/">
-                        <img class="first-slide" src="{% static '/sample/banner1.jpg' %}" alt="Game Title 1">
-                    </a>
-                </div>
-                <div class="item">
-                    <a href="#">
-                        <img class="second-slide" src="{% static '/sample/banner2.jpg' %}" alt="Game Title 2">
-                    </a>
-                </div>
-                <div class="item">
-                    <a href="#">
-                        <img class="third-slide" src="{% static '/sample/banner3.jpg' %}" alt="Game Title 3">
-                    </a>
-                </div>
-            </div>
-            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div><!-- /Carousel -->
 
 
         <!-- Featured and Recommended Games: Quick Entries
